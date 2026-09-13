@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-multipart
+torch
+torchvision
+opencv-contrib-python==4.13.0.92
+pillow
+numpy
+scikit-learn
+matplotlib
+huggingface_hub

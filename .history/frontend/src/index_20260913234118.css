@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&family=Syne:wght@400;500;600&display=swap');
+
+:root {
+  --paper: #f3f2e9;
+  --ink: #16201c;
+  --muted: #69716a;
+  --line: #d5d7c9;
+  --green: #2abe7e;
+  --green-deep: #167149;
+  --mono: 'DM Mono', monospace;
+  --display: 'Syne', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; background: radial-gradient(circle at 90% 8%, #e7ead9 0, transparent 28%), var(--paper); }
+button, input { font: inherit; }
+button:focus-visible, .dropzone:focus-visible { outline: 2px solid var(--green-deep); outline-offset: 3px; }

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Deepfake Detector</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 720px;
+         margin: 40px auto; padding: 20px; background: #0f0f13; color: #eaeaea; }
+  h1 { color: #fff; }
+  .drop { border: 2px dashed #444; padding: 40px; text-align: center;
+          border-radius: 12px; cursor: pointer; margin: 20px 0; }
+  .drop:hover { border-color: #6366f1; background: #1a1a24; }
+  button { background: #6366f1; color: #fff; border: none; padding: 12px 24px;
+           border-radius: 8px; cursor: pointer; font-size: 16px; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .result { margin-top: 24px; padding: 20px; border-radius: 12px;
+            background: #1a1a24; }
+  .fake { border-left: 4px solid #ef4444; }
+  .real { border-left: 4px solid #22c55e; }
+  .score { font-size: 32px; font-weight: bold; margin: 10px 0; }
+  .detail { display: flex; justify-content: space-between;
+            padding: 6px 0; border-bottom: 1px solid #2a2a36; }
+  .progress { height: 6px; background: #2a2a36; border-radius: 3px;
+              overflow: hidden; margin: 12px 0; }
+  .bar { height: 100%; background: #6366f1; transition: width 0.3s; }
+</style>
+</head>
+<body>
+  <h1>🔍 Deepfake & AI-Gen Detector</h1>
+  <div class="drop" id="drop">
+    <p>Click to upload or drag a file here</p>
+    <input type="file" id="file" hidden accept="video/*,image/*">
+  </div>
+  <button id="btn" disabled>Analyze</button>
+  <div id="progress" class="progress" style="display:none"><div class="bar" style="width:0%"></div></div>
+  <div id="result"></div>
+
+<script>
+const API = "";
+let selectedFile = null;
+
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('file');
+const btn = document.getElementById('btn');
+const resultDiv = document.getElementById('result');
+const progress = document.getElementById('progress');
+const bar = progress.querySelector('.bar');
+
+drop.onclick = () => fileInput.click();
+drop.ondragover = (e) => { e.preventDefault(); drop.style.borderColor = '#6366f1'; };
+drop.ondragleave = () => { drop.style.borderColor = '#444'; };
+drop.ondrop = (e) => {
+  e.preventDefault();
+  drop.style.borderColor = '#444';
+  handleFile(e.dataTransfer.files[0]);
+};
+fileInput.onchange = (e) => handleFile(e.target.files[0]);
+
+function handleFile(file) {
+  if (!file) return;
+  selectedFile = file;
+  drop.querySelector('p').textContent = `Selected: ${file.name}`;
+  btn.disabled = false;
+  resultDiv.innerHTML = '';
+}
+
+btn.onclick = async () => {
+  if (!selectedFile) return;
+  btn.disabled = true;
+  resultDiv.innerHTML = '';
+  progress.style.display = 'block';
+  bar.style.width = '10%';
+
+  const fd = new FormData();
+  fd.append('file', selectedFile);
+
+  try {
+    const res = await fetch(`${API}/api/analyze`, { method: 'POST', body: fd });
+    const { job_id, status, result } = await res.json();
+    bar.style.width = '30%';
+
+    if (status === 'done') {
+      bar.style.width = '100%';
+      setTimeout(() => { progress.style.display = 'none'; }, 500);
+      showResult(result);
+      btn.disabled = false;
+      return;
+    }
+
+    // Poll for video results
+    const poll = setInterval(async () => {
+      const s = await fetch(`${API}/api/status/${job_id}`).then(r => r.json());
+      if (s.status === 'done') {
+        clearInterval(poll);
+        bar.style.width = '100%';
+        setTimeout(() => { progress.style.display = 'none'; }, 500);
+        showResult(s.result);
+        btn.disabled = false;
+      } else if (s.status === 'error') {
+        clearInterval(poll);
+        resultDiv.innerHTML = `<div class="result fake">Error: ${s.error}</div>`;
+        btn.disabled = false;
+      } else {
+        bar.style.width = Math.min(90, parseInt(bar.style.width) + 5) + '%';
+      }
+    }, 2000);
+  } catch (e) {
+    resultDiv.innerHTML = `<div class="result fake">Request failed: ${e.message}</div>`;
+    btn.disabled = false;
+  }
+};
+
+function showResult(r) {
+  if (r.error) {
+    resultDiv.innerHTML = `<div class="result fake">${r.error}</div>`;
+    return;
+  }
+  const cls = r.prediction.includes('FAKE') ? 'fake' : 'real';
+  let html = `<div class="result ${cls}">`;
+  html += `<div class="score">${r.prediction}</div>`;
+
+  for (const [k, v] of Object.entries(r)) {
+    if (k === 'prediction') continue;
+    const label = k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    html += `<div class="detail"><span>${label}</span><span>${v}</span></div>`;
+  }
+  html += '</div>';
+  resultDiv.innerHTML = html;
+}
+</script>
+</body>
+</html>
