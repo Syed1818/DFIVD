@@ -1,40 +1,80 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Shield, Image as ImageIcon, Film, BookOpen, Users, Mail } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function Navbar() {
   const location = useLocation();
+  const [hoveredIndex, setHoveredIndex] = useState(null);
 
-  const links = [
-    { path: '/', label: 'Home' },
-    { path: '/image-detection', label: 'Image Scan' },
-    { path: '/video-detection', label: 'Video Scan' },
-    { path: '/about', label: 'About' },
-    { path: '/how-to-use', label: 'Guide' },
-    { path: '/terms-privacy', label: 'Legal' },
-    { path: '/contact', label: 'Contact' },
+  const navLinks = [
+    { name: 'Home', path: '/', icon: Shield },
+    { name: 'Image Scan', path: '/image-detection', icon: ImageIcon },
+    { name: 'Video Scan', path: '/video-detection', icon: Film },
+    { name: 'Docs', path: '/how-to-use', icon: BookOpen },
+    { name: 'Team', path: '/about', icon: Users },
+    { name: 'Contact', path: '/contact', icon: Mail },
   ];
 
   return (
-    <nav className="fixed top-0 w-full p-4 flex flex-col md:flex-row justify-between items-center z-50 mix-blend-difference pointer-events-none">
-      <Link to="/" className="flex items-center gap-4 text-slate-100 no-underline mb-4 md:mb-0 pointer-events-auto">
-        <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-500 animate-pulse shadow-[0_0_15px_rgba(14,165,233,0.5)]"></div>
-        <h1 className="m-0 text-lg font-bold tracking-[0.3em]">ATHEIA</h1>
-      </Link>
-      
-      <div className="flex flex-wrap justify-center gap-2 md:gap-6 backdrop-blur-md bg-white/5 px-6 py-3 rounded-full border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)] pointer-events-auto">
-        {links.map((link) => {
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+      <motion.nav 
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, type: "spring", stiffness: 200, damping: 20 }}
+        className="bg-black/60 backdrop-blur-xl border-[0.5px] border-white/20 px-4 py-3 rounded-full flex items-center gap-2 md:gap-4 shadow-[0_20px_40px_rgba(0,0,0,0.4)]"
+      >
+        {navLinks.map((link, i) => {
           const isActive = location.pathname === link.path;
+          const isHovered = hoveredIndex === i;
+          
           return (
-            <Link 
+            <div 
               key={link.path} 
-              to={link.path}
-              className={`text-[10px] sm:text-xs uppercase tracking-widest font-semibold transition-all duration-300 ${isActive ? 'text-sky-400 drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]' : 'text-slate-400 hover:text-white'}`}
+              className="relative"
+              onMouseEnter={() => setHoveredIndex(i)}
+              onMouseLeave={() => setHoveredIndex(null)}
             >
-              {link.label}
-            </Link>
+              <AnimatePresence>
+                {isHovered && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.8 }}
+                    className="absolute -top-12 left-1/2 -translate-x-1/2 bg-white text-black text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded whitespace-nowrap pointer-events-none"
+                  >
+                    {link.name}
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white rotate-45"></div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              <Link to={link.path}>
+                <motion.div
+                  initial={false}
+                  animate={{ 
+                    scale: isHovered ? 1.25 : 1,
+                    y: isHovered ? -8 : 0,
+                    backgroundColor: isActive ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0)',
+                    color: isActive ? '#000' : '#fff'
+                  }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center border border-white/10 ${!isActive && 'hover:bg-white/10'} transition-colors cursor-pointer`}
+                >
+                  <link.icon className="w-5 h-5" strokeWidth={isActive ? 2 : 1.5} />
+                </motion.div>
+              </Link>
+              
+              {isActive && (
+                <motion.div 
+                  layoutId="activeIndicator"
+                  className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-white"
+                />
+              )}
+            </div>
           );
         })}
-      </div>
-    </nav>
+      </motion.nav>
+    </div>
   );
 }

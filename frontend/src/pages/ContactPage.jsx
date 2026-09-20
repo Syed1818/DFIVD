@@ -1,91 +1,127 @@
-import React, { useState } from 'react';
-import RippleBackground from '../components/backgrounds/RippleBackground';
+import React from 'react';
+import SpaceBackground from '../components/backgrounds/SpaceBackground';
+import { Mail, Code, Globe, ArrowRight } from 'lucide-react';
+import { motion } from 'motion/react';
 
 export default function ContactPage() {
-  const [sent, setSent] = useState(false);
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSent(true);
-    setTimeout(() => setSent(false), 3000);
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
   };
 
   return (
     <>
-      <RippleBackground />
-      <div className="relative z-10 w-full min-h-screen text-slate-100 font-sans tracking-wide pt-32 px-4 pb-20">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-10">
+      <SpaceBackground />
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        className="relative z-10 w-full min-h-screen text-white font-sans pt-40 px-6 lg:px-12 pb-32"
+      >
+        <div className="max-w-[1400px] mx-auto">
           
-          {/* Contact Info Sidebar */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="backdrop-blur-xl bg-slate-900/50 p-8 rounded-[2rem] border border-white/10 shadow-2xl">
-              <h2 className="text-3xl font-black mb-6 text-white">Get in Touch</h2>
-              <p className="text-slate-400 font-light mb-8">
-                Interested in enterprise API access, research collaboration, or media inquiries? Reach out to our team.
-              </p>
-              
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="text-sky-400 text-xl mt-1">📍</div>
-                  <div>
-                    <h3 className="font-bold text-sm uppercase tracking-widest">Headquarters</h3>
-                    <p className="text-slate-400 font-light text-sm mt-1">Neural Labs Inc.<br/>101 Cognitive Way<br/>San Francisco, CA 94105</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="text-sky-400 text-xl mt-1">✉️</div>
-                  <div>
-                    <h3 className="font-bold text-sm uppercase tracking-widest">Email</h3>
-                    <p className="text-slate-400 font-light text-sm mt-1">contact@atheia-ai.com<br/>research@atheia-ai.com</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="mb-32"
+          >
+            <h1 className="text-5xl md:text-8xl font-display uppercase tracking-tighter mb-8 max-w-4xl">Establish Contact</h1>
+            <p className="text-xl md:text-2xl text-slate-400 font-light leading-relaxed max-w-3xl">
+              For research inquiries, integration requests, or vulnerability disclosures, connect with the ATHEIA engineering and research teams.
+            </p>
+          </motion.div>
 
-          {/* Contact Form */}
-          <div className="lg:col-span-3 backdrop-blur-xl bg-slate-900/50 p-8 md:p-10 rounded-[2rem] border border-white/10 shadow-2xl">
-            {sent ? (
-              <div className="h-full flex flex-col items-center justify-center bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-8 rounded-xl text-center animate-in fade-in duration-300">
-                <div className="text-5xl mb-4">✅</div>
-                <h3 className="text-2xl font-bold mb-2">Transmission Successful</h3>
-                <p className="text-sm font-light">Our team will review your inquiry and respond shortly.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-widest text-slate-400 font-semibold">Full Name</label>
-                    <input required type="text" className="w-full bg-slate-800/50 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-sky-500 transition-colors" placeholder="Jane Doe" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-widest text-slate-400 font-semibold">Email Address</label>
-                    <input required type="email" className="w-full bg-slate-800/50 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-sky-500 transition-colors" placeholder="jane@example.com" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-widest text-slate-400 font-semibold">Inquiry Type</label>
-                  <select className="w-full bg-slate-800/50 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-sky-500 transition-colors appearance-none">
-                    <option>General Support</option>
-                    <option>Enterprise API Access</option>
-                    <option>Research Collaboration</option>
-                    <option>Media Inquiry</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-widest text-slate-400 font-semibold">Message</label>
-                  <textarea required rows="5" className="w-full bg-slate-800/50 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-sky-500 transition-colors resize-none" placeholder="How can we help you?"></textarea>
-                </div>
-                <button type="submit" className="w-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold tracking-widest uppercase text-sm py-4 rounded-xl shadow-[0_0_15px_rgba(14,165,233,0.3)] transition-all cursor-pointer">
-                  Send Secure Message
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            className="grid grid-cols-1 md:grid-cols-12 gap-0 border-[0.5px] border-white/10 bg-black/50 backdrop-blur-md mb-20"
+          >
+            
+            <motion.div variants={itemVariants} className="col-span-1 md:col-span-4 p-12 lg:p-16 border-b md:border-b-0 md:border-r-[0.5px] border-white/10 group hover:bg-white/5 transition-colors flex flex-col justify-between">
+              <div>
+                <motion.div whileHover={{ scale: 1.1, rotate: 5 }} transition={{ duration: 0.2 }} className="w-max">
+                  <Mail className="w-8 h-8 text-white mb-12" strokeWidth={1} />
+                </motion.div>
+                <h2 className="text-[10px] uppercase tracking-[0.3em] font-medium text-slate-500 mb-4">Direct Communication</h2>
+                <h3 className="text-2xl font-display uppercase tracking-tighter mb-6 group-hover:text-sky-400 transition-colors">research@atheia.dev</h3>
+                <p className="text-slate-400 font-light text-sm leading-relaxed mb-8">
+                  For general inquiries regarding model architecture, training sets, or collaboration opportunities.
+                </p>
+                <button className="text-[10px] uppercase tracking-widest font-bold border-b border-white pb-1 group-hover:border-sky-400 transition-colors flex items-center gap-2">
+                  <span>Send Protocol</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                 </button>
-              </form>
-            )}
-          </div>
+              </div>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="col-span-1 md:col-span-4 p-12 lg:p-16 border-b md:border-b-0 md:border-r-[0.5px] border-white/10 group hover:bg-white/5 transition-colors flex flex-col justify-between">
+              <div>
+                <motion.div whileHover={{ scale: 1.1, rotate: 5 }} transition={{ duration: 0.2 }} className="w-max">
+                  <Code className="w-8 h-8 text-white mb-12" strokeWidth={1} />
+                </motion.div>
+                <h2 className="text-[10px] uppercase tracking-[0.3em] font-medium text-slate-500 mb-4">Source Code</h2>
+                <h3 className="text-2xl font-display uppercase tracking-tighter mb-6 group-hover:text-sky-400 transition-colors">GitHub Repository</h3>
+                <p className="text-slate-400 font-light text-sm leading-relaxed mb-8">
+                  Review the frontend interface codebase, issue tracking, and version history.
+                </p>
+                <button className="text-[10px] uppercase tracking-widest font-bold border-b border-white pb-1 group-hover:border-sky-400 transition-colors flex items-center gap-2">
+                  <span>Access Repository</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="col-span-1 md:col-span-4 p-12 lg:p-16 group hover:bg-white/5 transition-colors flex flex-col justify-between">
+              <div>
+                <motion.div whileHover={{ scale: 1.1, rotate: 5 }} transition={{ duration: 0.2 }} className="w-max">
+                  <Globe className="w-8 h-8 text-white mb-12" strokeWidth={1} />
+                </motion.div>
+                <h2 className="text-[10px] uppercase tracking-[0.3em] font-medium text-slate-500 mb-4">Professional Network</h2>
+                <h3 className="text-2xl font-display uppercase tracking-tighter mb-6 group-hover:text-sky-400 transition-colors">LinkedIn Profiles</h3>
+                <p className="text-slate-400 font-light text-sm leading-relaxed mb-8">
+                  Connect with the founding engineers and researchers behind the ATHEIA initiative.
+                </p>
+                <button className="text-[10px] uppercase tracking-widest font-bold border-b border-white pb-1 group-hover:border-sky-400 transition-colors flex items-center gap-2">
+                  <span>View Network</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+            </motion.div>
+
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.8 }}
+            className="bg-black/80 backdrop-blur-sm border-[0.5px] border-white/10 p-12 lg:p-20 flex flex-col md:flex-row justify-between items-start md:items-center gap-12"
+          >
+            <div className="max-w-2xl">
+              <h2 className="text-3xl md:text-4xl font-display uppercase tracking-tighter mb-6">Security & Vulnerability Disclosure</h2>
+              <p className="text-slate-400 font-light text-sm leading-relaxed">
+                We take the security of our neural inference engine seriously. If you believe you have discovered a method to bypass detection or a vulnerability in our API, please utilize our encrypted disclosure channel. We request a 90-day embargo before public disclosure of verified bypassing techniques.
+              </p>
+            </div>
+            <motion.button 
+              whileHover={{ scale: 1.05 }} 
+              whileTap={{ scale: 0.95 }}
+              className="bg-white text-black px-8 py-5 hover:bg-slate-200 transition-colors uppercase tracking-[0.2em] text-xs font-bold whitespace-nowrap"
+            >
+              Submit Disclosure
+            </motion.button>
+          </motion.div>
 
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }

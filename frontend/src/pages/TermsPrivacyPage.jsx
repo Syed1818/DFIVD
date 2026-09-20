@@ -1,54 +1,102 @@
 import React from 'react';
 import SpaceBackground from '../components/backgrounds/SpaceBackground';
+import { motion } from 'motion/react';
 
 export default function TermsPrivacyPage() {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  };
+
   return (
     <>
       <SpaceBackground />
-      <div className="relative z-10 w-full min-h-screen text-slate-200 font-sans tracking-wide pt-32 px-4 pb-20">
-        <div className="max-w-4xl mx-auto backdrop-blur-md bg-slate-900/60 p-10 md:p-16 rounded-[2rem] border border-white/10 shadow-2xl">
-          <h1 className="text-4xl font-black mb-4 text-white">Terms of Service & Privacy Policy</h1>
-          <p className="text-sm font-light text-slate-400 mb-12">Last Updated: September 2026</p>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        className="relative z-10 w-full min-h-screen text-white font-sans pt-40 px-6 lg:px-12 pb-32"
+      >
+        <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-12 lg:gap-24">
           
-          <div className="space-y-10 font-light leading-relaxed">
-            <section className="bg-slate-800/30 p-8 rounded-2xl border border-white/5">
-              <h2 className="text-2xl font-bold mb-4 text-sky-400">1. Data Processing and Privacy (Zero Retention)</h2>
-              <p className="mb-4">
-                At ATHEIA, we take data privacy seriously. Any media uploaded to our servers for forensic analysis is strictly processed in memory. <strong className="text-white">We do not persist, store, or distribute your images or videos.</strong> Once the neural analysis is complete and the inference results are returned to your client, all associated files are immediately flushed from our volatile memory.
+          <div className="lg:w-1/3">
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="sticky top-40"
+            >
+              <h1 className="text-5xl font-display uppercase tracking-tighter mb-6">Legal & Privacy</h1>
+              <p className="text-slate-400 font-light text-sm leading-relaxed mb-8">
+                Strict adherence to zero-retention policies and ethical use guidelines for the ATHEIA neural forensic platform.
               </p>
-              <p>
-                We collect anonymous telemetry regarding inference times, bandwidth utilization, and high-level model confidence scores strictly to improve our systems. This telemetry cannot be tied to any uploaded media or specific IP addresses.
-              </p>
-            </section>
-
-            <section className="bg-slate-800/30 p-8 rounded-2xl border border-white/5">
-              <h2 className="text-2xl font-bold mb-4 text-sky-400">2. Acceptable Use Policy</h2>
-              <p className="mb-4">
-                The ATHEIA platform is intended for educational, forensic, and research purposes. You agree not to use the service to:
-              </p>
-              <ul className="list-disc list-inside space-y-2 text-sm text-slate-300 ml-2">
-                <li>Analyze illicit, illegal, or non-consensual media.</li>
-                <li>Attempt to reverse-engineer, decompile, or extract the neural network weights.</li>
-                <li>Launch Denial of Service (DoS) attacks against our inference endpoints.</li>
-                <li>Embed our API in commercial products without prior authorization.</li>
-              </ul>
-              <p className="mt-4">
-                We reserve the right to immediately rate-limit or permanently ban IP addresses that violate these terms.
-              </p>
-            </section>
-
-            <section className="bg-slate-800/30 p-8 rounded-2xl border border-white/5">
-              <h2 className="text-2xl font-bold mb-4 text-sky-400">3. Disclaimer of Liability</h2>
-              <p className="mb-4">
-                While our neural networks represent the state-of-the-art in synthetic media detection, <strong className="text-white">no AI detection tool is 100% infallible</strong>. Adversarial attacks and novel generative models can occasionally bypass detection (false negatives), and unusual compression artifacts can cause authentic media to be flagged (false positives).
-              </p>
-              <p className="italic text-slate-400 text-sm border-l-4 border-sky-500/50 pl-4 py-2">
-                "The probability scores and forensic heatmaps provided by ATHEIA should not be used as the sole basis for definitive legal, professional, journalistic, or personal claims. We provide this tool 'as is' without any warranties of absolute accuracy."
-              </p>
-            </section>
+              <nav className="flex flex-col space-y-4 text-[10px] uppercase tracking-[0.2em] font-bold">
+                <motion.a whileHover={{ x: 5 }} href="#privacy" className="text-sky-400 border-l-[0.5px] border-sky-400 pl-4 py-1">Privacy Policy</motion.a>
+                <motion.a whileHover={{ x: 5 }} href="#terms" className="text-slate-500 border-l-[0.5px] border-white/10 pl-4 py-1 hover:text-white transition-colors">Terms of Service</motion.a>
+                <motion.a whileHover={{ x: 5 }} href="#ethics" className="text-slate-500 border-l-[0.5px] border-white/10 pl-4 py-1 hover:text-white transition-colors">Ethical Guidelines</motion.a>
+              </nav>
+            </motion.div>
           </div>
+
+          <div className="lg:w-2/3 space-y-24 bg-black/80 backdrop-blur-md border-[0.5px] border-white/10 p-12 lg:p-20">
+            
+            <motion.section 
+              id="privacy"
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+            >
+              <h2 className="text-[10px] uppercase tracking-[0.3em] font-medium text-slate-500 mb-8 border-b-[0.5px] border-white/10 pb-4">01. Privacy Policy</h2>
+              <div className="space-y-8 text-slate-300 font-light text-sm leading-relaxed">
+                <motion.div variants={itemVariants}>
+                  <h3 className="text-white font-bold uppercase tracking-widest text-xs mb-4">Zero Data Retention</h3>
+                  <p>ATHEIA operates on a strict zero-retention architecture. Media files uploaded for analysis are processed entirely in volatile memory (RAM) during the inference stage. Absolutely no data is written to persistent storage, databases, or logs.</p>
+                </motion.div>
+                <motion.div variants={itemVariants}>
+                  <h3 className="text-white font-bold uppercase tracking-widest text-xs mb-4">Data Processing</h3>
+                  <p>Upon completion of the analysis pipeline, the matrix containing the resulting probability score and heatmap generation is returned to the client, and the source media is instantaneously purged from the server memory.</p>
+                </motion.div>
+                <motion.div variants={itemVariants}>
+                  <h3 className="text-white font-bold uppercase tracking-widest text-xs mb-4">Analytics & Telemetry</h3>
+                  <p>We do not track individual users, nor do we store IP addresses or identifying metadata associated with upload requests. We maintain only aggregated, anonymized metrics regarding system load and inference times for performance optimization.</p>
+                </motion.div>
+              </div>
+            </motion.section>
+
+            <motion.section 
+              id="terms"
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+            >
+              <h2 className="text-[10px] uppercase tracking-[0.3em] font-medium text-slate-500 mb-8 border-b-[0.5px] border-white/10 pb-4">02. Terms of Service</h2>
+              <div className="space-y-8 text-slate-300 font-light text-sm leading-relaxed">
+                <motion.div variants={itemVariants}>
+                  <h3 className="text-white font-bold uppercase tracking-widest text-xs mb-4">Platform Usage</h3>
+                  <p>ATHEIA is provided as an analytical tool for detecting synthetic media. Users agree to utilize the platform responsibly and not to attempt reverse engineering, denial of service, or exploitation of the underlying neural architectures.</p>
+                </motion.div>
+                <motion.div variants={itemVariants}>
+                  <h3 className="text-white font-bold uppercase tracking-widest text-xs mb-4">Accuracy Disclaimer</h3>
+                  <p>While our ensemble models achieve high accuracy rates, neural network inference is probabilistic, not absolute. The platform may produce false positives or false negatives. ATHEIA's output should be considered one component of a broader forensic investigation, not a definitive legal conclusion.</p>
+                </motion.div>
+                <motion.div variants={itemVariants}>
+                  <h3 className="text-white font-bold uppercase tracking-widest text-xs mb-4">Liability</h3>
+                  <p>The developers of ATHEIA assume no liability for decisions made or actions taken based on the system's output. The service is provided "as is" without warranty of any kind.</p>
+                </motion.div>
+              </div>
+            </motion.section>
+
+          </div>
+
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }

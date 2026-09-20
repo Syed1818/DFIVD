@@ -9,10 +9,12 @@ import HowToUsePage from './pages/HowToUsePage';
 import TermsPrivacyPage from './pages/TermsPrivacyPage';
 import ContactPage from './pages/ContactPage';
 import Footer from './components/Footer';
+import MouseFollower from './components/MouseFollower';
 
 function App() {
   return (
     <Router>
+      <MouseFollower />
       <Navbar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
