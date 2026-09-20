@@ -42,9 +42,17 @@ function BrainNodes() {
 
   useFrame((state, delta) => {
     if (points.current) {
+      // Base automated rotation
       points.current.rotation.y += delta * 0.1;
       points.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.2) * 0.1;
       
+      // Interactive parallax based on mouse
+      const targetRotationX = (state.pointer.y * Math.PI) * 0.1;
+      const targetRotationY = (state.pointer.x * Math.PI) * 0.1;
+      
+      points.current.rotation.x += (targetRotationX - points.current.rotation.x) * 0.05;
+      points.current.rotation.y += (targetRotationY) * 0.05; // additive to the base rotation
+
       // Pulse size
       const scale = 1 + Math.sin(state.clock.elapsedTime * 2) * 0.05;
       points.current.scale.set(scale, scale, scale);

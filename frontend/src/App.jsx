@@ -10,11 +10,13 @@ import TermsPrivacyPage from './pages/TermsPrivacyPage';
 import ContactPage from './pages/ContactPage';
 import Footer from './components/Footer';
 import MouseFollower from './components/MouseFollower';
+import ContextMenu from './components/ContextMenu';
 
 function App() {
   return (
     <Router>
       <MouseFollower />
+      <ContextMenu />
       <Navbar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
