@@ -3,7 +3,7 @@ import "./App.css";
 import { Link004 } from "./components/ui/skiper-ui/skiper40";
 import BlurText from "./components/BlurText";
 
-const API = "/api";
+const API = "http://localhost:8000/api";
 const formatLabel = (value) =>
   value.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 
@@ -18,7 +18,7 @@ async function readApiResponse(response) {
   if (!response.ok)
     throw new Error(
       data?.detail ||
-        "Detector API is unavailable. Start FastAPI on port 8000.",
+      "Detector API is unavailable. Start FastAPI on port 8000.",
     );
   return data;
 }
@@ -62,7 +62,7 @@ function useScrollScene() {
       setScroll(
         Math.min(
           window.scrollY /
-            Math.max(document.body.scrollHeight - window.innerHeight, 1),
+          Math.max(document.body.scrollHeight - window.innerHeight, 1),
           1,
         ),
       );
@@ -83,10 +83,14 @@ function useMagneticElements(route) {
           (event.clientX - (bounds.left + bounds.width / 2)) / bounds.width;
         const y =
           (event.clientY - (bounds.top + bounds.height / 2)) / bounds.height;
-        element.style.transform = `translate(${x * 8}px, ${y * 8}px) rotateX(${y * -3}deg) rotateY(${x * 3}deg)`;
+        const target = element.firstElementChild || element;
+        target.style.transform = `translate(${x * 8}px, ${y * 8}px) rotateX(${y * -3}deg) rotateY(${x * 3}deg)`;
+        target.style.transition = 'none';
       };
       const leave = () => {
-        element.style.transform = "";
+        const target = element.firstElementChild || element;
+        target.style.transform = "";
+        target.style.transition = 'transform 0.25s ease-out';
       };
       element.addEventListener("pointermove", move, { passive: true });
       element.addEventListener("pointerleave", leave, { passive: true });
@@ -632,8 +636,8 @@ function DetectionPage({ mode, apiOnline }) {
         : rawConfidenceValue;
   const metrics = result
     ? Object.entries(result).filter(
-        ([key, value]) => typeof value === "number" && !key.includes("frame"),
-      )
+      ([key, value]) => typeof value === "number" && !key.includes("frame"),
+    )
     : [];
   const verdictTheme =
     result && !result.error
