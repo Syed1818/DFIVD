@@ -2,48 +2,78 @@ import React from 'react';
 import GeometryBackground from '../components/backgrounds/GeometryBackground';
 
 export default function AboutPage() {
-  const team = [
-    { name: 'GD Pranu poojitha', role: 'Researcher' },
-    { name: 'Gayathri', role: 'Documentator' },
-    { name: 'Shreya', role: 'Frontend Developer' },
-    { name: 'Syed Shahid', role: 'Backend Developer' },
-  ];
-
   return (
     <>
       <GeometryBackground />
       <div className="relative z-10 w-full min-h-screen text-slate-100 font-sans tracking-wide pt-32 px-4 pb-20">
-        <div className="max-w-5xl mx-auto space-y-12">
+        <div className="max-w-6xl mx-auto space-y-16">
           
-          <div className="backdrop-blur-xl bg-slate-900/40 p-10 rounded-[2rem] border border-white/10 shadow-2xl">
-            <h2 className="text-4xl font-bold mb-8 text-sky-400">Our Team</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-              {team.map((member) => (
-                <div key={member.name} className="bg-slate-800/50 p-6 rounded-xl border border-white/5 text-center hover:bg-slate-800/80 transition-colors">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-tr from-sky-500 to-indigo-500 mb-4 flex items-center justify-center text-xl font-bold shadow-lg">
-                    {member.name.charAt(0)}
-                  </div>
-                  <h3 className="text-lg font-semibold">{member.name}</h3>
-                  <p className="text-sm text-sky-300 mt-2 uppercase tracking-wider">{member.role}</p>
-                </div>
-              ))}
+          <div className="backdrop-blur-md bg-slate-900/60 p-10 rounded-[2rem] border border-white/10 shadow-2xl text-center">
+            <h1 className="text-5xl font-black mb-6 text-white">The ATHEIA Initiative</h1>
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto font-light leading-relaxed">
+              We are a dedicated team of researchers and engineers building next-generation digital forensics tools to combat the rise of synthetic media and deepfakes.
+            </p>
+          </div>
+
+          <div className="backdrop-blur-md bg-slate-900/60 p-10 rounded-[2rem] border border-white/10 shadow-2xl">
+            <h2 className="text-3xl font-black mb-10 text-center text-emerald-400">Meet the Team</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {/* Team Member 1 */}
+              <div className="bg-slate-800/50 p-6 rounded-xl border border-white/5 text-center flex flex-col items-center">
+                <div className="w-24 h-24 rounded-full bg-emerald-500/20 mb-4 flex items-center justify-center text-3xl">🔬</div>
+                <h3 className="text-lg font-bold">GD Pranu poojitha</h3>
+                <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-3">Lead Researcher</p>
+                <p className="text-slate-400 text-sm font-light">Architecting the neural detection strategies and evaluating model architectures for maximum precision.</p>
+              </div>
+
+              {/* Team Member 2 */}
+              <div className="bg-slate-800/50 p-6 rounded-xl border border-white/5 text-center flex flex-col items-center">
+                <div className="w-24 h-24 rounded-full bg-sky-500/20 mb-4 flex items-center justify-center text-3xl">📝</div>
+                <h3 className="text-lg font-bold">Gayathri</h3>
+                <p className="text-sky-400 text-xs font-bold uppercase tracking-widest mb-3">Documentator</p>
+                <p className="text-slate-400 text-sm font-light">Translating complex AI research into comprehensive, accessible documentation and usage guides.</p>
+              </div>
+
+              {/* Team Member 3 */}
+              <div className="bg-slate-800/50 p-6 rounded-xl border border-white/5 text-center flex flex-col items-center">
+                <div className="w-24 h-24 rounded-full bg-purple-500/20 mb-4 flex items-center justify-center text-3xl">🎨</div>
+                <h3 className="text-lg font-bold">Shreya</h3>
+                <p className="text-purple-400 text-xs font-bold uppercase tracking-widest mb-3">Frontend Developer</p>
+                <p className="text-slate-400 text-sm font-light">Crafting the immersive, interactive 3D user interfaces using React and Three.js.</p>
+              </div>
+
+              {/* Team Member 4 */}
+              <div className="bg-slate-800/50 p-6 rounded-xl border border-white/5 text-center flex flex-col items-center">
+                <div className="w-24 h-24 rounded-full bg-amber-500/20 mb-4 flex items-center justify-center text-3xl">⚙️</div>
+                <h3 className="text-lg font-bold">Syed Shahid</h3>
+                <p className="text-amber-400 text-xs font-bold uppercase tracking-widest mb-3">Backend Developer</p>
+                <p className="text-slate-400 text-sm font-light">Building robust, high-performance FastAPI endpoints for real-time model inference.</p>
+              </div>
             </div>
           </div>
 
-          <div className="backdrop-blur-xl bg-slate-900/40 p-10 rounded-[2rem] border border-white/10 shadow-2xl">
-            <h2 className="text-4xl font-bold mb-6 text-indigo-400">Models & Technology</h2>
-            <div className="space-y-6 text-slate-300 leading-relaxed font-light">
-              <p>
-                <strong>ATHEIA</strong> leverages a hybrid ensemble of state-of-the-art neural networks designed to detect microscopic spatial and temporal inconsistencies in digital media.
-              </p>
-              <ul className="list-disc pl-6 space-y-4">
-                <li><strong>Spatial Analysis (Images):</strong> Utilizing advanced Vision Transformers (ViT) and CNNs fine-tuned on the latest synthetic datasets (Midjourney v6, DALL-E 3, Stable Diffusion XL) to identify unnatural frequency artifacts and blending boundaries.</li>
-                <li><strong>Temporal Analysis (Video):</strong> Deploying Recurrent Convolutional architectures (R-CNNs) paired with optical flow tracking to detect inter-frame inconsistencies, irregular micro-expressions, and biometrical violations indicative of face-swapping or lip-sync manipulation.</li>
-                <li><strong>Web Stack:</strong> Built on a high-performance React + Vite frontend with Tailwind CSS and Three.js (React Three Fiber) for immersive UI. The backend is powered by a robust Python FastAPI server ensuring rapid inference and parallel job processing.</li>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="backdrop-blur-md bg-slate-900/60 p-10 rounded-[2rem] border border-white/10 shadow-2xl">
+              <h2 className="text-3xl font-black mb-6 text-sky-400">The Technology Stack</h2>
+              <ul className="space-y-4 text-slate-300 font-light leading-relaxed list-disc list-inside">
+                <li><strong className="text-white">Frontend:</strong> Built with React, Tailwind CSS for rapid styling, and `@react-three/fiber` for stunning 3D canvas backgrounds.</li>
+                <li><strong className="text-white">Routing:</strong> Modular, client-side routing via `react-router-dom`.</li>
+                <li><strong className="text-white">Backend:</strong> Python-based FastAPI server ensuring blazing fast, asynchronous request handling.</li>
+                <li><strong className="text-white">Inference:</strong> PyTorch serving as the core engine for our deep learning models.</li>
               </ul>
             </div>
+
+            <div className="backdrop-blur-md bg-slate-900/60 p-10 rounded-[2rem] border border-white/10 shadow-2xl">
+              <h2 className="text-3xl font-black mb-6 text-purple-400">Our Models</h2>
+              <p className="text-slate-300 font-light mb-4 leading-relaxed">
+                ATHEIA utilizes an ensemble approach. For frame-by-frame analysis, we rely on architectures derived from <strong className="text-white">XceptionNet</strong>, pre-trained on massive datasets of synthetic faces.
+              </p>
+              <p className="text-slate-300 font-light leading-relaxed">
+                We also utilize <strong className="text-white">Mesonet-style CNNs</strong> specifically trained to detect mesoscopic properties of images—artifacts generated during the synthesis and blending processes that are invisible to the human eye.
+              </p>
+            </div>
           </div>
-          
+
         </div>
       </div>
     </>

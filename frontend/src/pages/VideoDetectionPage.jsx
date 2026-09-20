@@ -157,6 +157,33 @@ export default function VideoDetectionPage() {
             )}
             <input ref={inputRef} type="file" accept="video/*" onChange={handleFileSelect} className="hidden" />
           </div>
+
+          {/* New Informational Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-10">
+            <div className="bg-slate-900/40 backdrop-blur-md p-8 rounded-2xl border border-white/5">
+              <h3 className="text-xl font-bold mb-4 text-indigo-400">Temporal Analysis Engine</h3>
+              <p className="text-slate-300 font-light text-sm leading-relaxed mb-4">
+                The ATHEIA Video Scanner extracts frames at regular intervals, applying spatial neural network inference on each target. This reveals deepfakes that might appear authentic in a single frame but exhibit temporal flickering across multiple frames.
+              </p>
+              <ul className="text-slate-400 font-light text-xs space-y-2 list-disc list-inside">
+                <li>Max file size: 100 MB. Max length: 60 seconds.</li>
+                <li>Aggregates frame-level confidence into a global synthetic probability.</li>
+                <li>Isolates the subject's face where manipulation is most likely.</li>
+              </ul>
+            </div>
+            <div className="bg-slate-900/40 backdrop-blur-md p-8 rounded-2xl border border-white/5">
+              <h3 className="text-xl font-bold mb-4 text-indigo-400">Privacy Guarantee</h3>
+              <p className="text-slate-300 font-light text-sm leading-relaxed mb-4">
+                We employ a strict zero-retention policy for all uploaded media.
+              </p>
+              <ul className="text-slate-400 font-light text-xs space-y-2 list-disc list-inside">
+                <li>Videos are processed entirely in volatile memory.</li>
+                <li>No files are saved to disk or persistent storage.</li>
+                <li>Once the temporal probability is returned, data is purged.</li>
+              </ul>
+            </div>
+          </div>
+
         </div>
       </div>
     </>

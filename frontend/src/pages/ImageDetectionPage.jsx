@@ -156,6 +156,33 @@ export default function ImageDetectionPage() {
             )}
             <input ref={inputRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
           </div>
+
+          {/* New Informational Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-10">
+            <div className="bg-slate-900/40 backdrop-blur-md p-8 rounded-2xl border border-white/5">
+              <h3 className="text-xl font-bold mb-4 text-sky-400">Forensic Analysis Protocol</h3>
+              <p className="text-slate-300 font-light text-sm leading-relaxed mb-4">
+                The ATHEIA Image Scanner processes standard formats (JPEG, PNG, WEBP) through a pipeline of neural networks specifically trained to identify mesoscopic artifacts left by GANs and diffusion models.
+              </p>
+              <ul className="text-slate-400 font-light text-xs space-y-2 list-disc list-inside">
+                <li>Analyzes pixel-level blending inconsistencies.</li>
+                <li>Evaluates frequency domain anomalies.</li>
+                <li>Highlights regions of high synthetic probability via heatmaps.</li>
+              </ul>
+            </div>
+            <div className="bg-slate-900/40 backdrop-blur-md p-8 rounded-2xl border border-white/5">
+              <h3 className="text-xl font-bold mb-4 text-sky-400">Privacy Guarantee</h3>
+              <p className="text-slate-300 font-light text-sm leading-relaxed mb-4">
+                We employ a strict zero-retention policy for all uploaded media.
+              </p>
+              <ul className="text-slate-400 font-light text-xs space-y-2 list-disc list-inside">
+                <li>Images are processed entirely in volatile memory.</li>
+                <li>No files are saved to disk or persistent storage.</li>
+                <li>Once the probability matrix is returned, data is purged.</li>
+              </ul>
+            </div>
+          </div>
+
         </div>
       </div>
     </>

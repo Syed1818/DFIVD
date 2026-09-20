@@ -8,6 +8,7 @@ import AboutPage from './pages/AboutPage';
 import HowToUsePage from './pages/HowToUsePage';
 import TermsPrivacyPage from './pages/TermsPrivacyPage';
 import ContactPage from './pages/ContactPage';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/terms-privacy" element={<TermsPrivacyPage />} />
         <Route path="/contact" element={<ContactPage />} />
       </Routes>
+      <Footer />
     </Router>
   );
 }
