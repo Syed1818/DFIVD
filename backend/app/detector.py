@@ -1,6 +1,9 @@
 # backend/app/detector.py
 import base64
-import os, cv2, torch, torch.nn as nn
+import os
+import cv2
+import torch
+import torch.nn as nn
 import numpy as np
 from PIL import Image
 from torchvision import models, transforms
@@ -11,9 +14,11 @@ MODELS_DIR = os.path.join(BACKEND_DIR, "models")
 DAVID_DIR = os.path.join(BACKEND_DIR, "david")
 WEIGHTS_PATH = os.path.join(MODELS_DIR, "efficientnet_b0_ffpp_c23.pth")
 PROTO_PATH = os.path.join(MODELS_DIR, "deploy.prototxt")
-CAFFE_PATH = os.path.join(MODELS_DIR, "res10_300x300_ssd_iter_140000.caffemodel")
+CAFFE_PATH = os.path.join(
+    MODELS_DIR, "res10_300x300_ssd_iter_140000.caffemodel")
 DAVID_CHECKPOINT = os.path.join(MODELS_DIR, "david_encoder_clean.pth")
 DAVID_CLASSIFIER = os.path.join(MODELS_DIR, "best_detector_model.pt")
+
 
 class DeepfakeDetector:
     """Loads all models once. Reused across requests."""
@@ -23,9 +28,11 @@ class DeepfakeDetector:
         print(f"Loading models on {self.device}...")
 
         required_files = [WEIGHTS_PATH, PROTO_PATH, CAFFE_PATH]
-        missing_files = [path for path in required_files if not os.path.exists(path)]
+        missing_files = [
+            path for path in required_files if not os.path.exists(path)]
         if missing_files:
-            missing_names = ", ".join(os.path.basename(path) for path in missing_files)
+            missing_names = ", ".join(os.path.basename(path)
+                                      for path in missing_files)
             raise FileNotFoundError(
                 f"Missing model assets in {MODELS_DIR}: {missing_names}. "
                 "Download the model files before starting FastAPI."
@@ -67,8 +74,8 @@ class DeepfakeDetector:
         """Load DAViD encoder + classifier."""
         import sys
         sys.path.insert(0, DAVID_DIR)
-        from encoder import load_feature_extractor
-        from model import ClassificationHead
+        from encoder import load_feature_extractor  # type: ignore
+        from model import ClassificationHead  # type: ignore
 
         self.david_encoder = load_feature_extractor(
             arch="ViT-B/16",
@@ -76,7 +83,8 @@ class DeepfakeDetector:
             checkpoint_path=DAVID_CHECKPOINT,
         ).eval().to(self.device)
 
-        self.david_classifier = ClassificationHead(input_dim=512, num_classes=3)
+        self.david_classifier = ClassificationHead(
+            input_dim=512, num_classes=3)
         cls_state = torch.load(DAVID_CLASSIFIER, map_location="cpu",
                                weights_only=False)
         if isinstance(cls_state, dict) and 'model' in cls_state:
@@ -154,7 +162,8 @@ class DeepfakeDetector:
     def _image_data_url(image, quality=88):
         if isinstance(image, Image.Image):
             image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-        ok, encoded = cv2.imencode(".jpg", image, [cv2.IMWRITE_JPEG_QUALITY, quality])
+        ok, encoded = cv2.imencode(
+            ".jpg", image, [cv2.IMWRITE_JPEG_QUALITY, quality])
         if not ok:
             return None
         payload = base64.b64encode(encoded.tobytes()).decode("ascii")
@@ -194,7 +203,7 @@ class DeepfakeDetector:
         }
 
     # ---- Video prediction (top-k + voting) ----
-    def predict_video(self, video_path, fps_extract=2, threshold=0.5):
+    def predict_video(self, video_path, fps_extract=2, threshold=0.5, progress_cb=None):
         cap = cv2.VideoCapture(video_path)
         if not cap.isOpened():
             return {"error": "Could not open video"}
@@ -209,7 +218,7 @@ class DeepfakeDetector:
         best_frame = None
         fake_votes = real_votes = 0
 
-        for idx in indices:
+        for idx_count, idx in enumerate(indices):
             cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
             ret, frame = cap.read()
             if not ret:
@@ -225,6 +234,14 @@ class DeepfakeDetector:
                 fake_votes += 1
             else:
                 real_votes += 1
+
+            if progress_cb:
+                progress_cb({
+                    "current": idx_count + 1,
+                    "total": len(indices),
+                    "status": "processing"
+                })
+
         cap.release()
 
         if not fake_scores:
