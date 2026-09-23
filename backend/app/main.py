@@ -80,12 +80,17 @@ manager = ConnectionManager()
 
 
 async def cleanup_stale_jobs():
-    """Background task to wipe jobs from memory after 5 minutes."""
+    """Background task to wipe completed jobs from memory after 5 minutes, or abandoned jobs after 1 hour."""
     while True:
         await asyncio.sleep(60)
         current_time = time.time()
-        stale_keys = [k for k, v in jobs.items() if current_time -
-                      v.get("created_at", 0) > 300]
+        stale_keys = []
+        for k, v in jobs.items():
+            age = current_time - v.get("created_at", 0)
+            if v.get("status") in ["done", "error"] and age > 300:
+                stale_keys.append(k)
+            elif age > 3600:
+                stale_keys.append(k)
         for k in stale_keys:
             del jobs[k]
 
@@ -160,18 +165,26 @@ async def analyze(file: UploadFile = File(...)):
             )
 
         try:
+            # Send initial message
+            asyncio.run_coroutine_threadsafe(
+                manager.broadcast(
+                    job_id, {"status": "processing", "message": "Initializing temporal sequence analysis..."}),
+                loop
+            )
             result = detector.predict_video(save_path, progress_cb=progress_cb)
-            jobs[job_id].update({"status": "done", "result": result})
-            asyncio.run_coroutine_threadsafe(
-                manager.broadcast(job_id, jobs[job_id]),
-                loop
-            )
+            if job_id in jobs:
+                jobs[job_id].update({"status": "done", "result": result})
+                asyncio.run_coroutine_threadsafe(
+                    manager.broadcast(job_id, jobs[job_id]),
+                    loop
+                )
         except Exception as e:
-            jobs[job_id].update({"status": "error", "error": str(e)})
-            asyncio.run_coroutine_threadsafe(
-                manager.broadcast(job_id, jobs[job_id]),
-                loop
-            )
+            if job_id in jobs:
+                jobs[job_id].update({"status": "error", "error": str(e)})
+                asyncio.run_coroutine_threadsafe(
+                    manager.broadcast(job_id, jobs[job_id]),
+                    loop
+                )
         finally:
             if os.path.exists(save_path):
                 os.remove(save_path)

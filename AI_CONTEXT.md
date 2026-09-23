@@ -44,7 +44,8 @@ The Vite proxy defaults to `http://127.0.0.1:8000`. Override it with `frontend/.
 - `GET /api/health` returns `{ status, device }`.
 - `POST /api/analyze` accepts multipart field `file`.
 - Images return a completed job immediately.
-- Videos return a job ID and require polling at `GET /api/status/{job_id}`.
+- Videos return a job ID.
+- Video processing streams real-time status and logs via WebSocket `ws://{host}:{port}/ws/status/{job_id}`.
 - Results may include `prediction`, confidence metrics, `annotated_preview`, `face_crop`, and `face_box`.
 - Frontend must handle non-JSON and unavailable API responses gracefully.
 
@@ -59,6 +60,8 @@ The visual direction is dark, cinematic glassmorphism:
 - FAKE or LIKELY FAKE verdict: coral/red.
 - Do not recolor verdict states when changing the system theme.
 - Detection pages own robot/judge visuals; landing and About own neural/neuron visuals.
+- The UI incorporates "Live Telemetry Terminal" overlays for processing logs and "Raw Metrics Dumps" for outputs.
+- State is managed globally via `DetectionContext` to allow background video processing during page navigation.
 - Use animation for hierarchy and feedback, not for decoration that harms readability.
 
 ## Agent Rules
