@@ -80,14 +80,19 @@ body {
     ),
     radial-gradient(circle at 12% 80%, rgba(25, 44, 105, 0.2), transparent 25%),
     var(--paper);
-  cursor: none;
 }
-button,
-a,
-input,
-.cursor-pointer,
-.dropzone {
-  cursor: none !important;
+html {
+  scroll-behavior: smooth;
+}
+@media (hover: hover) and (pointer: fine) {
+  body { cursor: none; }
+  button,
+  a,
+  input,
+  .cursor-pointer,
+  .dropzone {
+    cursor: none !important;
+  }
 }
 button,
 input {

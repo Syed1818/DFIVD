@@ -24,7 +24,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative z-10 w-full mt-auto bg-black border-t-[0.5px] border-white/20 text-slate-400 py-16 px-6 lg:px-12 overflow-hidden">
+    <footer className="relative z-10 w-full mt-auto bg-black border-t-[0.5px] border-white/20 text-slate-400 py-12 md:py-16 px-4 md:px-6 lg:px-12 pb-24 md:pb-16 overflow-hidden">
       <motion.div 
         variants={containerVariants}
         initial="hidden"

@@ -20,7 +20,7 @@ export default function AboutPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="relative z-10 w-full min-h-screen text-white font-sans pt-40 px-6 lg:px-12 pb-32"
+        className="relative z-10 w-full min-h-screen text-white font-sans pt-24 md:pt-40 px-4 md:px-6 lg:px-12 pb-28 md:pb-32"
       >
         <div className="max-w-[1400px] mx-auto">
           
@@ -28,9 +28,9 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="mb-32"
+            className="mb-16 md:mb-32"
           >
-            <h1 className="text-5xl md:text-8xl font-display uppercase tracking-tighter mb-8 max-w-4xl">The ATHEIA Initiative</h1>
+            <h1 className="text-4xl md:text-8xl font-display uppercase tracking-tighter mb-6 md:mb-8 max-w-4xl">The ATHEIA Initiative</h1>
             <p className="text-xl md:text-2xl text-slate-400 font-light leading-relaxed max-w-3xl">
               We are a dedicated team of researchers and engineers building next-generation digital forensics tools to combat the rise of synthetic media.
             </p>
@@ -41,7 +41,7 @@ export default function AboutPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
-            className="mb-32 border-t-[0.5px] border-white/10 pt-16"
+            className="mb-16 md:mb-32 border-t-[0.5px] border-white/10 pt-10 md:pt-16"
           >
             <h2 className="text-[10px] uppercase tracking-[0.3em] font-medium text-slate-500 mb-12">Core Team</h2>
             
@@ -81,7 +81,7 @@ export default function AboutPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-12"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12"
           >
             <motion.div variants={itemVariants} className="bg-black/80 backdrop-blur-sm border-[0.5px] border-white/10 p-12 lg:p-16">
               <h2 className="text-[10px] uppercase tracking-[0.3em] font-medium text-slate-500 mb-8">The Technology Stack</h2>

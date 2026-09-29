@@ -1,91 +1,106 @@
-# Atheia: Local-First Deepfake & AI Media Detector
+# Atheia — Deepfake & AI-Generated Media Detector
 
-Atheia is a powerful, privacy-first deepfake and AI-generated media detection tool. It runs entirely on your local machine, ensuring that sensitive media never leaves your device. 
-
-The system leverages a hybrid model architecture, combining a lightweight spatial EfficientNet and the advanced DAViD Vision Transformer to accurately detect manipulations in both images and videos.
+Atheia is a privacy-first deepfake detection platform that runs entirely on your local machine. Upload an image or video, and the system isolates facial regions, runs inference through a pre-trained EfficientNet classifier, and returns a deterministic verdict with confidence metrics.
 
 ## Features
 
-*   **Local-First Architecture**: No cloud APIs. All inference runs on your local GPU or CPU.
-*   **Dual-Model Fusion**: Combines spatial anomaly detection with advanced temporal/vision-transformer features (DAViD) for high accuracy.
-*   **Background Processing**: Upload a video, start the scan, and navigate around the application. The global state manager ensures the job continues in the background.
-*   **Live Telemetry Terminal**: Watch the model work in real-time. Video processing streams live progress and log data via WebSockets to a sleek terminal UI.
-*   **Premium Cyber-Security UI**: A futuristic, glassmorphic dashboard built with React 19, Vite 8, Tailwind CSS v4, and framer-motion.
-*   **Advanced Metrics Dump**: View the raw deterministic output scores, bounding boxes, and AI-generated natural language summaries explaining the result.
+- **Local-First**: All inference runs on your machine (GPU or CPU). No cloud calls, no data leaves your device.
+- **Image & Video Support**: Synchronous analysis for images; background-threaded processing for videos with HTTP status polling.
+- **Live Telemetry Terminal**: A real-time terminal overlay shows processing logs and progress during analysis.
+- **Animated Confidence Ring**: Results are visualized with an animated SVG ring and color-coded verdict badges (green = authentic, red = synthetic).
+- **Drag & Drop Upload**: Drag files directly onto the upload zone with animated visual feedback.
+- **Mobile-First UI**: Responsive bottom-sheet navigation, touch-optimized controls, safe-area padding, and adaptive typography across all breakpoints.
+- **Advanced Metrics Dump**: Raw model output scores rendered in a monospace terminal-style panel.
+- **Face Crop Preview**: When a face is detected, the isolated crop is displayed alongside the verdict.
 
-## Architecture & Technology Stack
+## Tech Stack
 
-**Frontend**:
-*   React 19 + Vite 8
-*   Tailwind CSS v4 (Surrealist Design System)
-*   Framer Motion (Animations)
-*   Lucide React (Icons)
-*   Global State via React Context
-
-**Backend**:
-*   FastAPI (Python)
-*   PyTorch (Model Inference)
-*   MTCNN + Caffe SSD (Robust Multi-Face Extraction & Alignment)
-*   WebSockets (Live Telemetry Streaming)
-*   Automated Eval Harness (EER, AUC, ECE)
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | React 19, Vite 8, Tailwind CSS v4, Framer Motion (`motion/react`), Lucide Icons, React Router |
+| **Backend** | FastAPI, PyTorch, OpenCV (Caffe SSD face detection) |
+| **State** | React Context (`DetectionContext`) for global image/video analysis state |
+| **Styling** | Dark glassmorphism design system with custom CSS tokens (`Space Grotesk`, `Syne`, `DM Mono`) |
 
 ## Getting Started
 
 ### Prerequisites
-*   Node.js (v18+)
-*   Python (3.9+)
-*   Model Weights (Must be downloaded before starting)
 
-### 1. Backend Setup
+- Node.js v18+
+- Python 3.9+
+- Model weights in `backend/models/` (download via `python backend/download_models.py`)
 
-Navigate to the backend directory and install dependencies:
+### Backend
+
 ```powershell
 cd backend
 pip install -r requirements.txt
-```
-
-Start the FastAPI server:
-```powershell
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-*Health check: `http://127.0.0.1:8000/api/health`*
 
-### 2. Frontend Setup
+Health check: [http://127.0.0.1:8000/api/health](http://127.0.0.1:8000/api/health)
 
-In a new terminal, navigate to the frontend directory:
+### Frontend
+
 ```powershell
 cd frontend
 npm install
+npm run dev
 ```
 
-Start the Vite development server:
-```powershell
-npm run dev -- --host 127.0.0.1
-```
-
-Open your browser to the local URL provided by Vite.
+Open the local URL printed by Vite (typically `http://localhost:5173`).
 
 ## Project Structure
 
-*   `frontend/`: The React application UI and global context management.
-*   `backend/app/main.py`: FastAPI endpoints and WebSocket lifecycle manager.
-*   `backend/app/detector.py`: Core inference logic, face cropping, prediction fusion, and telemetry logging.
-*   `backend/models/`: Directory for storing downloaded `.pth`, `.pt`, and `.caffemodel` files.
+```
+deepfake-detector/
+├── backend/
+│   ├── app/
+│   │   ├── main.py          # FastAPI endpoints, job lifecycle, CORS
+│   │   └── detector.py      # Model loading, face detection, prediction
+│   ├── models/               # .pth, .caffemodel weights (git-ignored)
+│   ├── download_models.py    # Script to fetch model weights
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx           # Route shell (React Router)
+│   │   ├── main.jsx          # Entry point with DetectionProvider
+│   │   ├── index.css         # Global tokens, Tailwind imports, resets
+│   │   ├── context/
+│   │   │   └── DetectionContext.jsx  # Global state for image/video analysis
+│   │   ├── pages/
+│   │   │   ├── LandingPage.jsx
+│   │   │   ├── ImageDetectionPage.jsx
+│   │   │   ├── VideoDetectionPage.jsx
+│   │   │   ├── AboutPage.jsx
+│   │   │   ├── HowToUsePage.jsx
+│   │   │   ├── ContactPage.jsx
+│   │   │   └── TermsPrivacyPage.jsx
+│   │   └── components/
+│   │       ├── Navbar.jsx         # Desktop dock + mobile drawer
+│   │       ├── Footer.jsx
+│   │       ├── MouseFollower.jsx  # Custom cursor (desktop only)
+│   │       ├── NeuronButton.jsx   # Particle-burst navigation button
+│   │       ├── ContextMenu.jsx
+│   │       └── backgrounds/       # Canvas/CSS animated backgrounds
+│   └── package.json
+├── AI_CONTEXT.md    # Agent handoff document
+├── AGENTS.md        # Agent entry point
+└── README.md
+```
+
+## API Contract
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/health` | GET | Returns `{ status, device }` |
+| `/api/analyze` | POST | Accepts multipart `file`. Images return completed result immediately. Videos return `{ job_id, status: "processing" }`. |
+| `/api/status/{job_id}` | GET | Poll for video job status. Returns `{ status, result?, error? }`. |
 
 ## Developer Notes
 
-For a complete guide on how coding agents should interact with this repository, please read the [AI_CONTEXT.md](AI_CONTEXT.md) and [AGENTS.md](AGENTS.md) files.
+For coding agents (Gemini, Claude, Copilot, etc.), read [AI_CONTEXT.md](AI_CONTEXT.md) and [AGENTS.md](AGENTS.md) before making changes.
 
-## Evaluation & Testing
+## License
 
-Run the adversarial evaluation harness to compute performance metrics (AUC, EER, ECE, F1) against compression artifacts:
-```powershell
-cd backend
-python eval/run_eval.py
-```
-
-Run the API and Security test suite:
-```powershell
-cd backend
-python -m pytest tests/test_main.py -v
-```
+This project is for educational and research purposes.

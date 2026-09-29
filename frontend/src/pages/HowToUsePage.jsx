@@ -22,7 +22,7 @@ export default function HowToUsePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="relative z-10 w-full min-h-screen text-white font-sans pt-40 px-6 lg:px-12 pb-32"
+        className="relative z-10 w-full min-h-screen text-white font-sans pt-24 md:pt-40 px-4 md:px-6 lg:px-12 pb-28 md:pb-32"
       >
         <div className="max-w-[1400px] mx-auto">
           
@@ -30,9 +30,9 @@ export default function HowToUsePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="mb-32"
+            className="mb-16 md:mb-32"
           >
-            <h1 className="text-5xl md:text-8xl font-display uppercase tracking-tighter mb-8 max-w-4xl">System Documentation</h1>
+            <h1 className="text-4xl md:text-8xl font-display uppercase tracking-tighter mb-6 md:mb-8 max-w-4xl">System Documentation</h1>
             <p className="text-xl md:text-2xl text-slate-400 font-light leading-relaxed max-w-3xl">
               A comprehensive guide to utilizing the ATHEIA neural forensic platform.
             </p>
@@ -43,7 +43,7 @@ export default function HowToUsePage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-12 gap-0 border-[0.5px] border-white/10 bg-black/50 backdrop-blur-md mb-32"
+            className="grid grid-cols-1 md:grid-cols-12 gap-0 border-[0.5px] border-white/10 bg-black/50 backdrop-blur-md mb-16 md:mb-32"
           >
             
             <motion.div variants={itemVariants} className="col-span-1 md:col-span-4 p-12 lg:p-16 border-b md:border-b-0 md:border-r-[0.5px] border-white/10 group hover:bg-white/5 transition-colors flex flex-col justify-between">

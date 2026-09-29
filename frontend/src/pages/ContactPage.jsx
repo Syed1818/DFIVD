@@ -21,7 +21,7 @@ export default function ContactPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="relative z-10 w-full min-h-screen text-white font-sans pt-40 px-6 lg:px-12 pb-32"
+        className="relative z-10 w-full min-h-screen text-white font-sans pt-24 md:pt-40 px-4 md:px-6 lg:px-12 pb-28 md:pb-32"
       >
         <div className="max-w-[1400px] mx-auto">
           
@@ -29,9 +29,9 @@ export default function ContactPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="mb-32"
+            className="mb-16 md:mb-32"
           >
-            <h1 className="text-5xl md:text-8xl font-display uppercase tracking-tighter mb-8 max-w-4xl">Establish Contact</h1>
+            <h1 className="text-4xl md:text-8xl font-display uppercase tracking-tighter mb-6 md:mb-8 max-w-4xl">Establish Contact</h1>
             <p className="text-xl md:text-2xl text-slate-400 font-light leading-relaxed max-w-3xl">
               For research inquiries, integration requests, or vulnerability disclosures, connect with the ATHEIA engineering and research teams.
             </p>

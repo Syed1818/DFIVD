@@ -4,19 +4,21 @@ This document is the shared project brief for Gemini, Claude, ChatGPT, GitHub Co
 
 ## Product
 
-Atheia is a local-first deepfake and AI-generated media detector. Users upload an image or video, the FastAPI service detects a face, runs the available model ensemble, and returns a verdict plus visual evidence.
+Atheia is a local-first deepfake and AI-generated media detector. Users upload an image or video, the FastAPI service detects a face via Caffe SSD, runs an EfficientNet classifier, and returns a verdict with confidence metrics and a face crop.
 
 ## Repository Map
 
 - `frontend/`: React 19 + Vite 8 application.
-- `frontend/src/App.jsx`: route shell, upload workflow, API polling, result rendering, and shared page composition.
-- `frontend/src/App.css`: visual system and page-level styles.
-- `frontend/src/index.css`: global tokens, Tailwind 4/shadcn base imports, and global resets.
-- `frontend/src/components/`: React Bits and Skiper UI components adapted for Vite.
+- `frontend/src/App.jsx`: Route shell using `react-router-dom` with `BrowserRouter`.
+- `frontend/src/context/DetectionContext.jsx`: Global state provider for image and video analysis (file selection, API calls, polling, results).
+- `frontend/src/index.css`: Global tokens, Tailwind 4 base imports, font imports, and mobile-safe cursor rules.
+- `frontend/src/pages/`: Page components — `LandingPage`, `ImageDetectionPage`, `VideoDetectionPage`, `AboutPage`, `HowToUsePage`, `ContactPage`, `TermsPrivacyPage`.
+- `frontend/src/components/Navbar.jsx`: Desktop floating dock + mobile FAB with animated bottom-sheet drawer.
+- `frontend/src/components/backgrounds/`: Animated background components (Brain, Particle, Grid, Geometry, Space, Ripple, DataStream).
 - `backend/app/main.py`: FastAPI endpoints and job lifecycle.
-- `backend/app/detector.py`: model loading, face crop, prediction, and preview serialization.
-- `backend/download_models.py`: downloads optional/local model assets.
-- `backend/models/`: downloaded model assets; do not commit large weights.
+- `backend/app/detector.py`: Model loading, Caffe SSD face detection, EfficientNet prediction, preview serialization.
+- `backend/download_models.py`: Downloads model weights to `backend/models/`.
+- `backend/models/`: Model weights (`.pth`, `.caffemodel`, `.prototxt`). Do not commit large files.
 
 ## Run Locally
 
@@ -25,64 +27,79 @@ Frontend:
 ```powershell
 cd frontend
 npm install
-npm run dev -- --host 127.0.0.1
+npm run dev
 ```
 
 Backend:
 
 ```powershell
 cd backend
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+pip install -r requirements.txt
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
 Health check: `http://127.0.0.1:8000/api/health`
 
-The Vite proxy defaults to `http://127.0.0.1:8000`. Override it with `frontend/.env.local` and `VITE_API_URL` only when intentionally using another backend.
+The frontend `DetectionContext` hardcodes `http://localhost:8000/api` as the API base. Override with `frontend/.env` and `VITE_API_URL` only when using another backend.
 
 ## API Contract
 
-- `GET /api/health` returns `{ status, device }`.
+- `GET /api/health` → `{ status, device }`.
 - `POST /api/analyze` accepts multipart field `file`.
-- Images return a completed job immediately.
-- Videos return a job ID.
-- Video processing streams real-time status and logs via WebSocket `ws://{host}:{port}/ws/status/{job_id}`.
-- Results may include `prediction`, confidence metrics, `annotated_preview`, `face_crop`, and `face_box`.
-- Frontend must handle non-JSON and unavailable API responses gracefully.
+  - **Images**: Return a completed `JobStatus` immediately with `status: "done"` and `result`.
+  - **Videos**: Return `{ job_id, status: "processing" }`. The frontend polls `GET /api/status/{job_id}` every 2 seconds until `status` becomes `"done"` or `"error"`.
+- `GET /api/status/{job_id}` → `{ job_id, status, result?, error? }`.
+- Results include: `prediction` (string), `fake_confidence` (string like "87.3%"), `face_crop` (base64 JPEG), `face_box` (coordinates), and additional model-specific fields.
+- There are **no WebSockets** in the current backend. Video status is HTTP-polled.
 
 ## UI Architecture
 
-Routes are hash-based and currently include `home`, `about`, `contact`, `image-detection`, and `video-detection`.
+Routes use `BrowserRouter` (path-based, not hash-based):
 
-The visual direction is dark, cinematic glassmorphism:
+| Path | Page | Background |
+|------|------|-----------|
+| `/` | LandingPage | BrainBackground |
+| `/image-detection` | ImageDetectionPage | ParticleBackground |
+| `/video-detection` | VideoDetectionPage | ParticleBackground |
+| `/about` | AboutPage | GeometryBackground |
+| `/how-to-use` | HowToUsePage | GridBackground |
+| `/contact` | ContactPage | SpaceBackground |
+| `/terms-privacy` | TermsPrivacyPage | SpaceBackground |
 
-- Base interface: near-black and electric blue.
-- REAL verdict: mint/green.
-- FAKE or LIKELY FAKE verdict: coral/red.
-- Do not recolor verdict states when changing the system theme.
-- Detection pages own robot/judge visuals; landing and About own neural/neuron visuals.
-- The UI incorporates "Live Telemetry Terminal" overlays for processing logs and "Raw Metrics Dumps" for outputs.
-- State is managed globally via `useAnalyze` hook to allow background video processing during page navigation.
-- Use animation for hierarchy and feedback, not for decoration that harms readability.
+### Design System
 
-## Evaluation & Metrics (Backend)
+- Dark, cinematic glassmorphism. Base: near-black `#05070c`. Accent: electric blue `#55b9ff`.
+- REAL verdict: emerald/green (`#34d399`). FAKE verdict: red (`#f87171`).
+- Verdict colors are hardcoded and must not change with themes.
+- Fonts: `Space Grotesk` (body), `Syne` (display/headings), `DM Mono` (terminal/code).
+- Custom cursor (`MouseFollower.jsx`) is desktop-only, gated by `@media (hover: hover) and (pointer: fine)`.
 
-- The core pipeline uses an automated adversarial evaluation harness located in `backend/eval/run_eval.py`.
-- Ensure changes to the detection modules (`detector.py`, `face_detection.py`, `ensemble.py`, `video.py`) pass the `run_eval.py` regression metrics before shipping.
-- We target an AUC of >= 0.98 and an EER of <= 0.05.
+### Detection Page UX
+
+- Upload zone supports both click-to-select and drag-and-drop with animated visual feedback.
+- Processing shows a "Live Telemetry Terminal" overlay with streaming logs and a progress bar.
+- Results display an animated SVG confidence ring, verdict badge (rounded pill), face crop preview, terminal-style metrics dump, and a natural-language system assessment.
+- All elements are responsive: smaller sizes, tighter padding, and touch-friendly (`active:`) states on mobile.
+
+### Navigation
+
+- **Desktop**: Floating dock at `bottom-6` center with icon buttons, hover tooltips, and `layoutId` active indicator.
+- **Mobile**: FAB (floating action button) at bottom-right opens a full-width bottom-sheet drawer with 3-column icon grid. Closes on route change or backdrop tap.
 
 ## Agent Rules
 
-- Preserve the local FastAPI contract and image/video behavior.
-- Strictly enforce file upload security validations and maintain async locks around global job dictionaries to prevent race conditions.
-- Prefer existing React Bits, Skiper, Tailwind, and local CSS patterns before adding dependencies.
-- Keep public components readable and split large surfaces when a change spans multiple responsibilities.
-- Use `npm run lint` and `npm run build` after frontend changes.
-- Check the browser for route transitions, mobile overflow, and result visibility.
-- Do not commit model weights, cache directories, or generated `dist/` output.
+- Preserve the local FastAPI contract. Images are synchronous; videos use background threads + HTTP polling.
+- Do not add WebSockets — the current architecture uses `GET /api/status/{job_id}` polling.
+- Prefer existing Tailwind utility classes and local CSS variables over adding new dependencies.
+- Keep components focused. Split large files when a change spans multiple responsibilities.
+- Run `npm run build` after frontend changes to catch compilation errors.
+- Test across breakpoints: mobile (375px), tablet (768px), and desktop (1400px).
+- Do not commit model weights, `__pycache__`, `node_modules`, or `dist/`.
 - Do not replace user changes without inspecting the current file first.
 
 ## Known Runtime Notes
 
-- DAViD checkpoints are optional locally; the backend can fall back to the spatial detector.
-- Browser-extension warnings about patching `window.location` are external to Atheia.
-- If Vite reports stale HMR or Motion hook errors, stop the old dev server, remove `frontend/node_modules/.vite`, and restart once.
+- DAViD checkpoints are optional; the backend falls back to the spatial EfficientNet detector.
+- Browser-extension warnings about `window.location` patching are external to Atheia.
+- If Vite reports stale HMR or Motion hook errors, stop the dev server, delete `frontend/node_modules/.vite`, and restart.
+- The production bundle is ~1.4 MB (gzipped ~380 KB). Consider code-splitting with dynamic `import()` if this grows.

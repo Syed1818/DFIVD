@@ -20,9 +20,9 @@ export default function TermsPrivacyPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="relative z-10 w-full min-h-screen text-white font-sans pt-40 px-6 lg:px-12 pb-32"
+        className="relative z-10 w-full min-h-screen text-white font-sans pt-24 md:pt-40 px-4 md:px-6 lg:px-12 pb-28 md:pb-32"
       >
-        <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-12 lg:gap-24">
+        <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-8 lg:gap-24">
           
           <div className="lg:w-1/3">
             <motion.div 
