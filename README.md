@@ -17,7 +17,7 @@ The system leverages a hybrid model architecture, combining a lightweight spatia
 
 **Frontend**:
 *   React 19 + Vite 8
-*   Tailwind CSS v4
+*   Tailwind CSS v4 (Surrealist Design System)
 *   Framer Motion (Animations)
 *   Lucide React (Icons)
 *   Global State via React Context
@@ -25,8 +25,9 @@ The system leverages a hybrid model architecture, combining a lightweight spatia
 **Backend**:
 *   FastAPI (Python)
 *   PyTorch (Model Inference)
-*   OpenCV (Face Extraction & Video Processing)
+*   MTCNN + Caffe SSD (Robust Multi-Face Extraction & Alignment)
 *   WebSockets (Live Telemetry Streaming)
+*   Automated Eval Harness (EER, AUC, ECE)
 
 ## Getting Started
 
@@ -74,3 +75,17 @@ Open your browser to the local URL provided by Vite.
 ## Developer Notes
 
 For a complete guide on how coding agents should interact with this repository, please read the [AI_CONTEXT.md](AI_CONTEXT.md) and [AGENTS.md](AGENTS.md) files.
+
+## Evaluation & Testing
+
+Run the adversarial evaluation harness to compute performance metrics (AUC, EER, ECE, F1) against compression artifacts:
+```powershell
+cd backend
+python eval/run_eval.py
+```
+
+Run the API and Security test suite:
+```powershell
+cd backend
+python -m pytest tests/test_main.py -v
+```

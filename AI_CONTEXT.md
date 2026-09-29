@@ -61,12 +61,19 @@ The visual direction is dark, cinematic glassmorphism:
 - Do not recolor verdict states when changing the system theme.
 - Detection pages own robot/judge visuals; landing and About own neural/neuron visuals.
 - The UI incorporates "Live Telemetry Terminal" overlays for processing logs and "Raw Metrics Dumps" for outputs.
-- State is managed globally via `DetectionContext` to allow background video processing during page navigation.
+- State is managed globally via `useAnalyze` hook to allow background video processing during page navigation.
 - Use animation for hierarchy and feedback, not for decoration that harms readability.
+
+## Evaluation & Metrics (Backend)
+
+- The core pipeline uses an automated adversarial evaluation harness located in `backend/eval/run_eval.py`.
+- Ensure changes to the detection modules (`detector.py`, `face_detection.py`, `ensemble.py`, `video.py`) pass the `run_eval.py` regression metrics before shipping.
+- We target an AUC of >= 0.98 and an EER of <= 0.05.
 
 ## Agent Rules
 
 - Preserve the local FastAPI contract and image/video behavior.
+- Strictly enforce file upload security validations and maintain async locks around global job dictionaries to prevent race conditions.
 - Prefer existing React Bits, Skiper, Tailwind, and local CSS patterns before adding dependencies.
 - Keep public components readable and split large surfaces when a change spans multiple responsibilities.
 - Use `npm run lint` and `npm run build` after frontend changes.

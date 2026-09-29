@@ -85,57 +85,48 @@ export function DetectionProvider({ children }) {
         logs: [...prev.logs, `Job initialized (ID: ${jobId})`, "Establishing telemetry stream..."]
       }));
 
-      // Connect to WebSocket
-      const ws = new WebSocket(`${WS_BASE}/status/${jobId}`);
-      
-      ws.onmessage = (event) => {
-        const msgData = JSON.parse(event.data);
-        
-        if (msgData.status === "processing") {
-          let newProgress = prevProgress => prevProgress; // don't change if not specified
-          let newLog = msgData.message || "Processing in progress...";
+      // Poll for status
+      const poll = async () => {
+        try {
+          const res = await fetch(`${API_BASE}/status/${jobId}`);
+          const msgData = await res.json();
           
-          if (msgData.progress) {
-             const p = msgData.progress;
-             newProgress = Math.floor((p.current / p.total) * 100);
-             newLog = msgData.message || `Extracting and analyzing frame ${p.current} / ${p.total}...`;
-          } else {
-             newProgress = prev => Math.min(prev + 5, 95);
+          if (msgData.status === "processing") {
+            setVideoState(prev => ({
+              ...prev,
+              progress: Math.min(prev.progress + 5, 95),
+              logs: [...prev.logs, "Processing in progress..."]
+            }));
+            setTimeout(poll, 2000);
+          } 
+          else if (msgData.status === "done") {
+            setVideoState(prev => ({
+              ...prev,
+              loading: false,
+              progress: 100,
+              result: msgData.result,
+              logs: [...prev.logs, "Sequence analysis complete.", "Compiling probability matrix..."]
+            }));
           }
-
-          setVideoState(prev => ({
-            ...prev,
-            progress: typeof newProgress === 'function' ? newProgress(prev.progress) : newProgress,
-            logs: [...prev.logs, newLog]
-          }));
-        } 
-        else if (msgData.status === "done") {
-          setVideoState(prev => ({
-            ...prev,
-            loading: false,
-            progress: 100,
-            result: msgData.result,
-            logs: [...prev.logs, "Sequence analysis complete.", "Compiling probability matrix..."]
-          }));
-          ws.close();
-        }
-        else if (msgData.status === "error") {
+          else if (msgData.status === "error") {
+            setVideoState(prev => ({
+              ...prev,
+              loading: false,
+              error: msgData.error || "Analysis failed.",
+              logs: [...prev.logs, `[ERROR] ${msgData.error || "Unknown error occurred"}`]
+            }));
+          }
+        } catch (err) {
           setVideoState(prev => ({
             ...prev,
             loading: false,
-            error: msgData.error || "Analysis failed.",
-            logs: [...prev.logs, `[ERROR] ${msgData.error || "Unknown error occurred"}`]
+            error: "Telemetry stream error.",
+            logs: [...prev.logs, "[WARNING] Telemetry stream connection error."]
           }));
-          ws.close();
         }
       };
 
-      ws.onerror = () => {
-        setVideoState(prev => ({
-          ...prev,
-          logs: [...prev.logs, "[WARNING] Telemetry stream connection error."]
-        }));
-      };
+      setTimeout(poll, 2000);
 
     } catch (err) {
       setVideoState(prev => ({

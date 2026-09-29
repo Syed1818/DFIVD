@@ -1,9 +1,6 @@
 # backend/app/detector.py
 import base64
-import os
-import cv2
-import torch
-import torch.nn as nn
+import os, cv2, torch, torch.nn as nn
 import numpy as np
 from PIL import Image
 from torchvision import models, transforms
@@ -14,17 +11,9 @@ MODELS_DIR = os.path.join(BACKEND_DIR, "models")
 DAVID_DIR = os.path.join(BACKEND_DIR, "david")
 WEIGHTS_PATH = os.path.join(MODELS_DIR, "efficientnet_b0_ffpp_c23.pth")
 PROTO_PATH = os.path.join(MODELS_DIR, "deploy.prototxt")
-CAFFE_PATH = os.path.join(
-    MODELS_DIR, "res10_300x300_ssd_iter_140000.caffemodel")
+CAFFE_PATH = os.path.join(MODELS_DIR, "res10_300x300_ssd_iter_140000.caffemodel")
 DAVID_CHECKPOINT = os.path.join(MODELS_DIR, "david_encoder_clean.pth")
 DAVID_CLASSIFIER = os.path.join(MODELS_DIR, "best_detector_model.pt")
-
-# --- Detection Threshold Defaults ---
-DEFAULT_VIDEO_FAKE_THRESHOLD = 0.6  # Individual frame threshold
-DEFAULT_TOP_K_MEAN_CUTOFF = 0.75    # Cutoff for the mean of the top K frames
-DEFAULT_MAX_SCORE_CUTOFF = 0.90     # Cutoff for the maximum frame score
-DEFAULT_IMAGE_FAKE_THRESHOLD = 0.6  # Threshold for single image prediction
-
 
 class DeepfakeDetector:
     """Loads all models once. Reused across requests."""
@@ -34,11 +23,9 @@ class DeepfakeDetector:
         print(f"Loading models on {self.device}...")
 
         required_files = [WEIGHTS_PATH, PROTO_PATH, CAFFE_PATH]
-        missing_files = [
-            path for path in required_files if not os.path.exists(path)]
+        missing_files = [path for path in required_files if not os.path.exists(path)]
         if missing_files:
-            missing_names = ", ".join(os.path.basename(path)
-                                      for path in missing_files)
+            missing_names = ", ".join(os.path.basename(path) for path in missing_files)
             raise FileNotFoundError(
                 f"Missing model assets in {MODELS_DIR}: {missing_names}. "
                 "Download the model files before starting FastAPI."
@@ -80,8 +67,8 @@ class DeepfakeDetector:
         """Load DAViD encoder + classifier."""
         import sys
         sys.path.insert(0, DAVID_DIR)
-        from encoder import load_feature_extractor  # type: ignore
-        from model import ClassificationHead  # type: ignore
+        from encoder import load_feature_extractor
+        from model import ClassificationHead
 
         self.david_encoder = load_feature_extractor(
             arch="ViT-B/16",
@@ -89,8 +76,7 @@ class DeepfakeDetector:
             checkpoint_path=DAVID_CHECKPOINT,
         ).eval().to(self.device)
 
-        self.david_classifier = ClassificationHead(
-            input_dim=512, num_classes=3)
+        self.david_classifier = ClassificationHead(input_dim=512, num_classes=3)
         cls_state = torch.load(DAVID_CLASSIFIER, map_location="cpu",
                                weights_only=False)
         if isinstance(cls_state, dict) and 'model' in cls_state:
@@ -116,8 +102,8 @@ class DeepfakeDetector:
         if best_box is None:
             return None
         x1, y1, x2, y2 = best_box.astype("int")
-        mx, my = int((x2 - x1) * 0.25), int((y2 - y1) * 0.25)
-        x1, y1 = max(0, x1 - mx), max(0, y1 - my)
+        mx, my = int((x2-x1)*0.1), int((y2-y1)*0.1)
+        x1, y1 = max(0, x1-mx), max(0, y1-my)
         x2, y2 = min(w, x2+mx), min(h, y2+my)
         crop = rgb[y1:y2, x1:x2]
         if crop.size == 0:
@@ -147,10 +133,10 @@ class DeepfakeDetector:
                 ai_gen = 0.0
                 deepfake = 0.0
 
-        if self.david_encoder is not None:
-            vit_fake = deepfake + ai_gen
-            # DAViD is generally more robust; give it 60% weight
-            fused = (spatial_fake * 0.4) + (vit_fake * 0.6)
+        if ai_gen > 0.35:
+            fused = ai_gen * 0.75 + spatial_fake * 0.25
+        elif ai_gen > 0.25:
+            fused = ai_gen * 0.5 + spatial_fake * 0.3 + deepfake * 0.2
         else:
             fused = spatial_fake
 
@@ -168,8 +154,7 @@ class DeepfakeDetector:
     def _image_data_url(image, quality=88):
         if isinstance(image, Image.Image):
             image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-        ok, encoded = cv2.imencode(
-            ".jpg", image, [cv2.IMWRITE_JPEG_QUALITY, quality])
+        ok, encoded = cv2.imencode(".jpg", image, [cv2.IMWRITE_JPEG_QUALITY, quality])
         if not ok:
             return None
         payload = base64.b64encode(encoded.tobytes()).decode("ascii")
@@ -193,7 +178,7 @@ class DeepfakeDetector:
         }
 
     # ---- Image prediction ----
-    def predict_image(self, image_path, threshold=DEFAULT_IMAGE_FAKE_THRESHOLD):
+    def predict_image(self, image_path):
         img = cv2.imread(image_path)
         if img is None:
             return {"error": "Could not read image"}
@@ -201,7 +186,7 @@ class DeepfakeDetector:
         if r is None:
             return {"error": "No face detected"}
         return {
-            "prediction": "FAKE" if r["fake_score"] > threshold else "REAL",
+            "prediction": "FAKE" if r["fake_score"] > 0.5 else "REAL",
             "fake_confidence": round(r["fake_score"] * 100, 2),
             "ai_gen_score": round(r["ai_gen"] * 100, 2),
             "deepfake_score": round(r["deepfake"] * 100, 2),
@@ -209,11 +194,7 @@ class DeepfakeDetector:
         }
 
     # ---- Video prediction (top-k + voting) ----
-    def predict_video(self, video_path, fps_extract=5, 
-                      threshold=DEFAULT_VIDEO_FAKE_THRESHOLD,
-                      top_k_mean_cutoff=DEFAULT_TOP_K_MEAN_CUTOFF,
-                      max_score_cutoff=DEFAULT_MAX_SCORE_CUTOFF,
-                      progress_cb=None):
+    def predict_video(self, video_path, fps_extract=2, threshold=0.5):
         cap = cv2.VideoCapture(video_path)
         if not cap.isOpened():
             return {"error": "Could not open video"}
@@ -221,14 +202,14 @@ class DeepfakeDetector:
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
         duration = frame_count / fps
-        n = max(30, int(duration * fps_extract))
+        n = max(15, int(duration * fps_extract))
         indices = np.linspace(0, frame_count - 1, n, dtype=int)
 
         fake_scores, ai_gen_scores = [], []
         best_frame = None
         fake_votes = real_votes = 0
 
-        for idx_count, idx in enumerate(indices):
+        for idx in indices:
             cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
             ret, frame = cap.read()
             if not ret:
@@ -244,15 +225,6 @@ class DeepfakeDetector:
                 fake_votes += 1
             else:
                 real_votes += 1
-
-            if progress_cb:
-                progress_cb({
-                    "current": idx_count + 1,
-                    "total": len(indices),
-                    "status": "processing",
-                    "message": f"Extracting and analyzing frame {idx_count + 1} / {len(indices)}..."
-                })
-
         cap.release()
 
         if not fake_scores:
@@ -265,20 +237,13 @@ class DeepfakeDetector:
         vote_pred = "FAKE" if fake_ratio >= 0.5 else "REAL"
 
         sorted_scores = sorted(fake_scores, reverse=True)
-        top_k = max(5, int(len(sorted_scores) * 0.15))
-        top_k = min(top_k, len(sorted_scores))
-        top_k_mean = float(np.mean(sorted_scores[:top_k]))
+        top_k = min(5, len(sorted_scores))
+        top5_mean = float(np.mean(sorted_scores[:top_k]))
         max_score = float(sorted_scores[0])
 
-        if progress_cb:
-            progress_cb({
-                "status": "processing",
-                "message": f"Analysis complete. Top-K Mean: {top_k_mean:.2f}, Max Score: {max_score:.2f}, Vote Ratio: {fake_ratio:.2f}"
-            })
-
-        if vote_pred == "FAKE" or top_k_mean >= top_k_mean_cutoff or max_score >= max_score_cutoff:
+        if vote_pred == "FAKE" or top5_mean >= 0.55 or max_score >= 0.85:
             final = "FAKE"
-        elif top_k_mean >= (top_k_mean_cutoff - 0.15) or max_score >= (max_score_cutoff - 0.15):
+        elif top5_mean >= 0.45 or max_score >= 0.70:
             final = "LIKELY FAKE"
         else:
             final = "REAL"
@@ -288,7 +253,7 @@ class DeepfakeDetector:
             "vote_prediction": vote_pred,
             "fake_frame_ratio": round(fake_ratio * 100, 2),
             "average_fake_confidence": round(avg_fake * 100, 2),
-            "top_k_mean_fake": round(top_k_mean * 100, 2),
+            "top5_mean_fake": round(top5_mean * 100, 2),
             "max_fake_confidence": round(max_score * 100, 2),
             "frames_processed": len(fake_scores),
             "total_frames": frame_count,
