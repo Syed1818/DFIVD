@@ -9,11 +9,17 @@ function formatLabel(key) {
 }
 
 // Animated confidence ring component
-function ConfidenceRing({ value, isFake, size = 160 }) {
+function ConfidenceRing({ value, verdictType, size = 160 }) {
   const numericValue = parseFloat(value) || 0;
   const radius = (size - 16) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (numericValue / 100) * circumference;
+
+  const strokeColor = verdictType === 'fake' ? '#f87171' : (verdictType === 'undetermined' ? '#fbbf24' : '#34d399');
+  const dropShadow = verdictType === 'fake' 
+    ? 'rgba(248,113,113,0.5)' 
+    : (verdictType === 'undetermined' ? 'rgba(251,191,36,0.5)' : 'rgba(52,211,153,0.5)');
+  const textColor = verdictType === 'fake' ? 'text-red-400' : (verdictType === 'undetermined' ? 'text-amber-400' : 'text-emerald-400');
 
   return (
     <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
@@ -25,23 +31,21 @@ function ConfidenceRing({ value, isFake, size = 160 }) {
         <motion.circle
           cx={size / 2} cy={size / 2} r={radius}
           fill="none"
-          stroke={isFake ? '#f87171' : '#34d399'}
+          stroke={strokeColor}
           strokeWidth="6"
           strokeLinecap="round"
           strokeDasharray={circumference}
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset: offset }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-          style={{ filter: `drop-shadow(0 0 8px ${isFake ? 'rgba(248,113,113,0.5)' : 'rgba(52,211,153,0.5)'})` }}
+          style={{ filter: `drop-shadow(0 0 8px ${dropShadow})` }}
         />
       </svg>
       <motion.div
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
-        className={`absolute text-4xl md:text-5xl font-display tracking-tighter font-bold ${
-          isFake ? 'text-red-400' : 'text-emerald-400'
-        }`}
+        className={`absolute text-4xl md:text-5xl font-display tracking-tighter font-bold ${textColor}`}
       >
         {value}
       </motion.div>
@@ -84,8 +88,12 @@ export default function VideoDetectionPage() {
     setIsDragOver(false);
   }, []);
 
-  const isFake = result?.prediction?.includes('FAKE');
-  const confidenceValue = (result?.fake_confidence ?? result?.average_fake_confidence ?? result?.max_fake_confidence) || '0%';
+  const isFake = Boolean(result?.prediction?.includes('FAKE'));
+  const isUndetermined = Boolean(result?.prediction === 'UNDETERMINED' || result?.error);
+  const verdictType = isFake ? 'fake' : (isUndetermined ? 'undetermined' : 'real');
+  const confidenceValue = isUndetermined
+    ? '0%'
+    : ((result?.fake_confidence ?? result?.average_fake_confidence ?? result?.max_fake_confidence) || '0%');
 
   return (
     <>
@@ -248,7 +256,7 @@ export default function VideoDetectionPage() {
                 )}
                 
                 {result && (
-                  <motion.div key="results" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: "spring", stiffness: 200, damping: 20 }} className={`h-full border-[0.5px] p-6 md:p-8 bg-black/80 flex flex-col justify-between ${isFake ? 'border-red-500/50 shadow-[inset_0_0_80px_rgba(239,68,68,0.08)]' : 'border-emerald-500/50 shadow-[inset_0_0_80px_rgba(16,185,129,0.08)]'}`}>
+                  <motion.div key="results" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: "spring", stiffness: 200, damping: 20 }} className={`h-full border-[0.5px] p-6 md:p-8 bg-black/80 flex flex-col justify-between ${isFake ? 'border-red-500/50 shadow-[inset_0_0_80px_rgba(239,68,68,0.08)]' : isUndetermined ? 'border-amber-500/50 shadow-[inset_0_0_80px_rgba(245,158,11,0.08)]' : 'border-emerald-500/50 shadow-[inset_0_0_80px_rgba(16,185,129,0.08)]'}`}>
                     <div>
                       <div className="flex justify-between items-center mb-8 md:mb-10 border-b-[0.5px] border-white/10 pb-4 md:pb-6">
                         <h3 className="text-[10px] uppercase tracking-[0.3em] text-slate-400">Deterministic Output</h3>
@@ -256,6 +264,11 @@ export default function VideoDetectionPage() {
                           <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="flex items-center gap-2 text-red-500 bg-red-500/10 px-3 py-1.5 border-[0.5px] border-red-500/30 rounded-full">
                             <AlertTriangle className="w-3.5 h-3.5 animate-pulse" />
                             <span className="text-[10px] uppercase tracking-widest font-bold">Synthetic</span>
+                          </motion.div>
+                        ) : isUndetermined ? (
+                          <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="flex items-center gap-2 text-amber-400 bg-amber-500/10 px-3 py-1.5 border-[0.5px] border-amber-500/30 rounded-full">
+                            <AlertTriangle className="w-3.5 h-3.5" />
+                            <span className="text-[10px] uppercase tracking-widest font-bold">Undetermined</span>
                           </motion.div>
                         ) : (
                           <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="flex items-center gap-2 text-emerald-400 bg-emerald-500/10 px-3 py-1.5 border-[0.5px] border-emerald-500/30 rounded-full">
@@ -268,7 +281,7 @@ export default function VideoDetectionPage() {
                       {/* Confidence Ring */}
                       <div className="mb-8 md:mb-10 flex flex-col items-center">
                         <div className="text-[9px] uppercase tracking-[0.3em] text-slate-500 mb-5">Final Confidence Score</div>
-                        <ConfidenceRing value={confidenceValue} isFake={isFake} size={typeof window !== 'undefined' && window.innerWidth < 768 ? 140 : 160} />
+                        <ConfidenceRing value={confidenceValue} verdictType={verdictType} size={typeof window !== 'undefined' && window.innerWidth < 768 ? 140 : 160} />
                       </div>
                       
                       {/* Metrics Dump */}
@@ -299,7 +312,9 @@ export default function VideoDetectionPage() {
                         <p className="text-[12px] md:text-[13px] text-slate-300 font-light leading-relaxed">
                           {isFake 
                             ? "High probability of synthetic manipulation detected in the temporal sequence. The neural network identified significant inter-frame inconsistencies and frequency domain anomalies consistent with generative AI tools or deepfake architectures."
-                            : "No significant synthetic manipulation detected across the temporal sequence. Inter-frame stability, frequency distribution, and noise patterns are highly consistent with authentic optical capture."}
+                            : isUndetermined 
+                              ? (result?.error || result?.message || "Face localization could not detect a valid facial region across video frames. Ensure subjects are clearly visible, well-lit, and unoccluded.")
+                              : "No significant synthetic manipulation detected across the temporal sequence. Inter-frame stability, frequency distribution, and noise patterns are highly consistent with authentic optical capture."}
                         </p>
                       </motion.div>
                     </div>

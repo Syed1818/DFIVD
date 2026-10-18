@@ -5,13 +5,15 @@ Atheia is a privacy-first deepfake detection platform that runs entirely on your
 ## Features
 
 - **Local-First**: All inference runs on your machine (GPU or CPU). No cloud calls, no data leaves your device.
-- **Image & Video Support**: Synchronous analysis for images; background-threaded processing for videos with HTTP status polling.
-- **Live Telemetry Terminal**: A real-time terminal overlay shows processing logs and progress during analysis.
-- **Animated Confidence Ring**: Results are visualized with an animated SVG ring and color-coded verdict badges (green = authentic, red = synthetic).
+- **Image & Video Support**: Synchronous analysis for images (up to 50MB); serialized background-threaded processing for videos (up to 500MB) with HTTP status polling.
+- **Tri-State Forensic Output**: Deterministic 3-state verdict system: Authentic (`REAL`, green), Synthetic (`FAKE`, red), and Inconclusive (`UNDETERMINED`, amber) when faces are absent or obscured.
+- **Live Telemetry Terminal**: A real-time terminal overlay shows processing logs, stage latency, and pipeline progress during analysis.
+- **Animated Confidence Ring**: Results are visualized with an animated SVG ring and color-coded verdict badges.
+- **Multi-Face Analysis**: Detects all visible subjects in a scene with centered square expansion, bounding box localization, and worst-case aggregation.
 - **Drag & Drop Upload**: Drag files directly onto the upload zone with animated visual feedback.
 - **Mobile-First UI**: Responsive bottom-sheet navigation, touch-optimized controls, safe-area padding, and adaptive typography across all breakpoints.
 - **Advanced Metrics Dump**: Raw model output scores rendered in a monospace terminal-style panel.
-- **Face Crop Preview**: When a face is detected, the isolated crop is displayed alongside the verdict.
+- **Face Crop Preview**: When a face is detected, the isolated crop and annotated frame are displayed alongside the verdict.
 
 ## Tech Stack
 
@@ -93,9 +95,9 @@ deepfake-detector/
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/health` | GET | Returns `{ status, device }` |
-| `/api/analyze` | POST | Accepts multipart `file`. Images return completed result immediately. Videos return `{ job_id, status: "processing" }`. |
-| `/api/status/{job_id}` | GET | Poll for video job status. Returns `{ status, result?, error? }`. |
+| `/api/health` | GET | Returns telemetry: `{ status, device, active_jobs, uptime_seconds }` |
+| `/api/analyze` | POST | Accepts multipart `file` (up to 50MB img / 500MB vid). Images return completed result immediately. Videos return `{ job_id, status: "processing" }`. Returns HTTP 429 if queue is saturated (>10 active jobs). |
+| `/api/status/{job_id}` | GET | Poll for video job status. Returns `{ job_id, status: "processing"|"done"|"error", result?, error? }`. |
 
 ## Developer Notes
 

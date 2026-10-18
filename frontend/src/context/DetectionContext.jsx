@@ -99,12 +99,19 @@ export function DetectionProvider({ children }) {
             setTimeout(poll, 2000);
           } 
           else if (msgData.status === "done") {
+            const isUndetermined = msgData.result?.prediction === 'UNDETERMINED';
             setVideoState(prev => ({
               ...prev,
               loading: false,
               progress: 100,
               result: msgData.result,
-              logs: [...prev.logs, "Sequence analysis complete.", "Compiling probability matrix..."]
+              logs: [
+                ...prev.logs,
+                "Sequence analysis complete.",
+                isUndetermined
+                  ? "[NOTICE] No facial region identified across video frames."
+                  : "Compiling probability matrix..."
+              ]
             }));
           }
           else if (msgData.status === "error") {
@@ -164,12 +171,19 @@ export function DetectionProvider({ children }) {
       if (!response.ok) throw new Error(data?.detail || "API unavailable.");
 
       if (data.status === "done") {
+        const isUndetermined = data.result?.prediction === 'UNDETERMINED';
         setImageState(prev => ({
           ...prev,
           loading: false,
           progress: 100,
           result: data.result,
-          logs: [...prev.logs, "Spatial rendering complete.", "Generating forensic heatmaps..."]
+          logs: [
+            ...prev.logs,
+            "Spatial rendering complete.",
+            isUndetermined
+              ? "[NOTICE] Face localization inconclusive. Subject face not isolated."
+              : "Generating forensic heatmaps..."
+          ]
         }));
       } else {
         setImageState(prev => ({

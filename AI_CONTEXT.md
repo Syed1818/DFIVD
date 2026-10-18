@@ -44,12 +44,12 @@ The frontend `DetectionContext` hardcodes `http://localhost:8000/api` as the API
 
 ## API Contract
 
-- `GET /api/health` → `{ status, device }`.
-- `POST /api/analyze` accepts multipart field `file`.
+- `GET /api/health` → `{ status, device, active_jobs, uptime_seconds }`.
+- `POST /api/analyze` accepts multipart field `file` (max 50MB img, 500MB vid; max 10 concurrent in-flight jobs).
   - **Images**: Return a completed `JobStatus` immediately with `status: "done"` and `result`.
   - **Videos**: Return `{ job_id, status: "processing" }`. The frontend polls `GET /api/status/{job_id}` every 2 seconds until `status` becomes `"done"` or `"error"`.
 - `GET /api/status/{job_id}` → `{ job_id, status, result?, error? }`.
-- Results include: `prediction` (string), `fake_confidence` (string like "87.3%"), `face_crop` (base64 JPEG), `face_box` (coordinates), and additional model-specific fields.
+- Results include: `prediction` ("REAL" | "FAKE" | "UNDETERMINED"), `fake_confidence` (percentage float or formatted string), `face_crop` (base64 JPEG), `face_box` (coordinates), `faces_detected` (integer), and additional model-specific fields.
 - There are **no WebSockets** in the current backend. Video status is HTTP-polled.
 
 ## UI Architecture
