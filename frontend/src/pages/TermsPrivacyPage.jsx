@@ -1,4 +1,3 @@
-import React from 'react';
 import SpaceBackground from '../components/backgrounds/SpaceBackground';
 import { motion } from 'motion/react';
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,6 +22,7 @@ export default function NeuronButton({ to, children, className }) {
       y,
       angle: (i / 12) * Math.PI * 2,
       distance: 40 + Math.random() * 60,
+      scale: Math.random() * 2 + 1,
     }));
     
     setParticles((prev) => [...prev, ...newParticles]);
@@ -49,7 +50,7 @@ export default function NeuronButton({ to, children, className }) {
             initial={{ opacity: 1, scale: 0, x: p.x, y: p.y }}
             animate={{ 
               opacity: 0, 
-              scale: Math.random() * 2 + 1,
+              scale: p.scale,
               x: p.x + Math.cos(p.angle) * p.distance, 
               y: p.y + Math.sin(p.angle) * p.distance 
             }}

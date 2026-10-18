@@ -1,23 +1,20 @@
-import React, { useRef, useMemo } from 'react';
+import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
+const PARTICLE_COUNT = 1000;
+const PARTICLE_POSITIONS = (() => {
+  const pos = new Float32Array(PARTICLE_COUNT * 3);
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    pos[i * 3] = (Math.random() - 0.5) * 40;
+    pos[i * 3 + 1] = (Math.random() - 0.5) * 40;
+    pos[i * 3 + 2] = (Math.random() - 0.5) * 40;
+  }
+  return pos;
+})();
+
 function ParticleNodes() {
   const points = useRef();
-  
-  const particleCount = 1000;
-  
-  const { positions, randoms } = useMemo(() => {
-    const pos = new Float32Array(particleCount * 3);
-    const rnd = new Float32Array(particleCount);
-    for (let i = 0; i < particleCount; i++) {
-      pos[i*3] = (Math.random() - 0.5) * 40;
-      pos[i*3+1] = (Math.random() - 0.5) * 40;
-      pos[i*3+2] = (Math.random() - 0.5) * 40;
-      rnd[i] = Math.random();
-    }
-    return { positions: pos, randoms: rnd };
-  }, []);
 
   useFrame((state, delta) => {
     if (points.current) {
@@ -29,7 +26,7 @@ function ParticleNodes() {
   return (
     <points ref={points}>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={positions.length / 3} array={positions} itemSize={3} />
+        <bufferAttribute attach="attributes-position" count={PARTICLE_POSITIONS.length / 3} array={PARTICLE_POSITIONS} itemSize={3} />
       </bufferGeometry>
       <pointsMaterial size={0.06} color="#38bdf8" transparent opacity={0.6} sizeAttenuation blending={THREE.AdditiveBlending} />
     </points>

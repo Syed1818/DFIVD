@@ -1,10 +1,12 @@
-import React, { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import ParticleBackground from '../components/backgrounds/ParticleBackground';
-import { UploadCloud, Film, CheckCircle, AlertTriangle, Play, RefreshCw, Activity, Terminal, Zap } from 'lucide-react';
+import { UploadCloud, Film, CheckCircle, AlertTriangle, Play, RefreshCw, Activity, Zap, Terminal } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useDetection } from '../context/DetectionContext';
 
-const formatLabel = (value) => value.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+function formatLabel(key) {
+  return key.replace(/_/g, ' ');
+}
 
 // Animated confidence ring component
 function ConfidenceRing({ value, isFake, size = 160 }) {

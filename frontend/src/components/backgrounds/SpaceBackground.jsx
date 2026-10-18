@@ -1,11 +1,11 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Stars } from '@react-three/drei';
 
 function SpaceNodes() {
   const group = useRef();
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (group.current) {
       group.current.rotation.y += delta * 0.02;
     }

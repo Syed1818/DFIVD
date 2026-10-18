@@ -1,4 +1,3 @@
-import React from 'react';
 import GeometryBackground from '../components/backgrounds/GeometryBackground';
 import { motion } from 'motion/react';
 

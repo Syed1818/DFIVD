@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { Image as ImageIcon, Film, Home, BookOpen } from 'lucide-react';
@@ -25,9 +25,7 @@ export default function ContextMenu() {
     };
 
     const handleClick = () => {
-      if (menuData.visible) {
-        setMenuData({ ...menuData, visible: false });
-      }
+      setMenuData(prev => prev.visible ? { ...prev, visible: false } : prev);
     };
 
     window.addEventListener('contextmenu', handleContextMenu);
@@ -37,7 +35,7 @@ export default function ContextMenu() {
       window.removeEventListener('contextmenu', handleContextMenu);
       window.removeEventListener('click', handleClick);
     };
-  }, [menuData.visible]);
+  }, []);
 
   const menuItems = [
     { label: 'Go to Home', icon: Home, path: '/' },

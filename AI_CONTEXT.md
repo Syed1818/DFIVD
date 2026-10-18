@@ -14,7 +14,7 @@ Atheia is a local-first deepfake and AI-generated media detector. Users upload a
 - `frontend/src/index.css`: Global tokens, Tailwind 4 base imports, font imports, and mobile-safe cursor rules.
 - `frontend/src/pages/`: Page components — `LandingPage`, `ImageDetectionPage`, `VideoDetectionPage`, `AboutPage`, `HowToUsePage`, `ContactPage`, `TermsPrivacyPage`.
 - `frontend/src/components/Navbar.jsx`: Desktop floating dock + mobile FAB with animated bottom-sheet drawer.
-- `frontend/src/components/backgrounds/`: Animated background components (Brain, Particle, Grid, Geometry, Space, Ripple, DataStream).
+- `frontend/src/components/backgrounds/`: Animated background components (Brain, Particle, Grid, Geometry, Space).
 - `backend/app/main.py`: FastAPI endpoints and job lifecycle.
 - `backend/app/detector.py`: Model loading, Caffe SSD face detection, EfficientNet prediction, preview serialization.
 - `backend/download_models.py`: Downloads model weights to `backend/models/`.

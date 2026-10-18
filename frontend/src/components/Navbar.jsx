@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Shield, Image as ImageIcon, Film, BookOpen, Users, Mail, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -7,16 +7,16 @@ export default function Navbar() {
   const location = useLocation();
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
-
-  useEffect(() => {
-    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
-  }, []);
+  const [isTouchDevice] = useState(() => 
+    typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+  );
+  const [prevPathname, setPrevPathname] = useState(location.pathname);
 
   // Close mobile menu on route change
-  useEffect(() => {
+  if (prevPathname !== location.pathname) {
+    setPrevPathname(location.pathname);
     setMobileOpen(false);
-  }, [location.pathname]);
+  }
 
   const navLinks = [
     { name: 'Home', path: '/', icon: Shield },

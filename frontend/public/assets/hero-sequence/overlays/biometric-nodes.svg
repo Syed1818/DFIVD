@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" fill="none">
+  <defs>
+    <filter id="nodeGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="glow" />
+      <feMerge>
+        <feMergeNode in="glow" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- 68-Point Caffe-SSD Forensic Landmark Nodes -->
+  <g filter="url(#nodeGlow)">
+    <!-- Jawline points (1 to 17) -->
+    <g fill="#55b9ff">
+      <circle cx="270" cy="550" r="4.5" />
+      <circle cx="280" cy="620" r="4.5" />
+      <circle cx="310" cy="700" r="4.5" />
+      <circle cx="345" cy="740" r="4.5" />
+      <circle cx="390" cy="770" r="4.5" />
+      <circle cx="425" cy="805" r="4.5" />
+      <circle cx="460" cy="830" r="5" />
+      <circle cx="500" cy="840" r="6" fill="#fbbf24" />
+      <circle cx="540" cy="830" r="5" />
+      <circle cx="575" cy="805" r="4.5" />
+      <circle cx="610" cy="770" r="4.5" />
+      <circle cx="655" cy="740" r="4.5" />
+      <circle cx="690" cy="700" r="4.5" />
+      <circle cx="720" cy="620" r="4.5" />
+      <circle cx="730" cy="550" r="4.5" />
+    </g>
+
+    <!-- Eyebrows (18 to 27) -->
+    <g fill="#38bdf8">
+      <circle cx="320" cy="380" r="4" />
+      <circle cx="350" cy="365" r="4" />
+      <circle cx="385" cy="360" r="4.5" />
+      <circle cx="420" cy="370" r="4" />
+      <circle cx="450" cy="390" r="4" />
+      
+      <circle cx="550" cy="390" r="4" />
+      <circle cx="580" cy="370" r="4" />
+      <circle cx="615" cy="360" r="4.5" />
+      <circle cx="650" cy="365" r="4" />
+      <circle cx="680" cy="380" r="4" />
+    </g>
+
+    <!-- Eyes and Pupils (37 to 48) with high-intensity amber cores -->
+    <g fill="#fbbf24">
+      <!-- Left Eye -->
+      <circle cx="340" cy="440" r="3.5" fill="#55b9ff" />
+      <circle cx="365" cy="425" r="3.5" fill="#55b9ff" />
+      <circle cx="400" cy="425" r="3.5" fill="#55b9ff" />
+      <circle cx="430" cy="445" r="3.5" fill="#55b9ff" />
+      <circle cx="395" cy="455" r="3.5" fill="#55b9ff" />
+      <circle cx="365" cy="455" r="3.5" fill="#55b9ff" />
+      <circle cx="382" cy="440" r="6" fill="#fbbf24" stroke="#ffffff" stroke-width="1.5" /> <!-- Left Pupil Center -->
+
+      <!-- Right Eye -->
+      <circle cx="570" cy="445" r="3.5" fill="#55b9ff" />
+      <circle cx="600" cy="425" r="3.5" fill="#55b9ff" />
+      <circle cx="635" cy="425" r="3.5" fill="#55b9ff" />
+      <circle cx="660" cy="440" r="3.5" fill="#55b9ff" />
+      <circle cx="635" cy="455" r="3.5" fill="#55b9ff" />
+      <circle cx="605" cy="455" r="3.5" fill="#55b9ff" />
+      <circle cx="618" cy="440" r="6" fill="#fbbf24" stroke="#ffffff" stroke-width="1.5" /> <!-- Right Pupil Center -->
+    </g>
+
+    <!-- Nose Bridge & Tip (28 to 36) -->
+    <g fill="#67f5b0">
+      <circle cx="500" cy="410" r="3.5" />
+      <circle cx="500" cy="460" r="3.5" />
+      <circle cx="500" cy="510" r="3.5" />
+      <circle cx="500" cy="560" r="4.5" />
+      <circle cx="465" cy="595" r="4" />
+      <circle cx="485" cy="605" r="4" />
+      <circle cx="500" cy="610" r="5" fill="#fbbf24" />
+      <circle cx="515" cy="605" r="4" />
+      <circle cx="535" cy="595" r="4" />
+    </g>
+
+    <!-- Mouth (49 to 68) -->
+    <g fill="#ff6d7d">
+      <circle cx="420" cy="670" r="4" />
+      <circle cx="450" cy="660" r="4" />
+      <circle cx="480" cy="655" r="4" />
+      <circle cx="500" cy="658" r="4.5" fill="#fbbf24" />
+      <circle cx="520" cy="655" r="4" />
+      <circle cx="550" cy="660" r="4" />
+      <circle cx="580" cy="670" r="4" />
+      <circle cx="550" cy="700" r="4" />
+      <circle cx="520" cy="715" r="4" />
+      <circle cx="500" cy="718" r="4.5" fill="#fbbf24" />
+      <circle cx="480" cy="715" r="4" />
+      <circle cx="450" cy="700" r="4" />
+    </g>
+  </g>
+
+  <!-- Technical Telemetry HUD Bracket Overlays -->
+  <g stroke="#55b9ff" stroke-width="1.5" opacity="0.75" font-family="'DM Mono', monospace">
+    <!-- Orbital Target Brackets -->
+    <path d="M 330 400 L 310 400 L 310 480 L 330 480" />
+    <path d="M 435 400 L 455 400 L 455 480 L 435 480" />
+    <text x="310" y="390" fill="#55b9ff" font-size="12" letter-spacing="1">ROI_EYE_L // 0.998</text>
+
+    <path d="M 545 400 L 525 400 L 525 480 L 545 480" />
+    <path d="M 670 400 L 690 400 L 690 480 L 670 480" />
+    <text x="545" y="390" fill="#55b9ff" font-size="12" letter-spacing="1">ROI_EYE_R // 0.994</text>
+
+    <!-- Face Bounding Rect (SSD Standard) -->
+    <rect x="220" y="140" width="560" height="730" rx="8" stroke="#55b9ff" stroke-dasharray="8 6" stroke-width="1" opacity="0.4" />
+    <text x="230" y="170" fill="#fbbf24" font-size="13" font-weight="600" letter-spacing="2">CAFFE_SSD: [X:220, Y:140, W:560, H:730]</text>
+    <text x="230" y="190" fill="#67f5b0" font-size="11" letter-spacing="1.5">LANDMARKS: 68_POINT_DENSE // REGISTERED</text>
+  </g>
+</svg>

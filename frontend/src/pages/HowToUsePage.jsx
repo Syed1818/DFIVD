@@ -1,4 +1,3 @@
-import React from 'react';
 import GridBackground from '../components/backgrounds/GridBackground';
 import { Link } from 'react-router-dom';
 import { UploadCloud, Cpu, LineChart, FileImage, FileVideo } from 'lucide-react';

@@ -18,6 +18,17 @@ export default defineConfig(({ mode }) => {
     optimizeDeps: {
       include: ["motion/react"],
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules/three') || id.includes('node_modules/@react-three')) {
+              return 'three-vendor';
+            }
+          }
+        }
+      }
+    },
     server: {
       allowedHosts: [
         'unpersonalised-clay-traditive.ngrok-free.dev'

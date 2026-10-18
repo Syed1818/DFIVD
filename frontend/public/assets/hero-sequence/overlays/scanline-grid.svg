@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" fill="none">
+  <defs>
+    <pattern id="scanlines" width="1000" height="8" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="1000" y2="0" stroke="rgba(85, 185, 255, 0.08)" stroke-width="2" />
+    </pattern>
+    <pattern id="gridSquares" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(123, 169, 219, 0.07)" stroke-width="1" />
+      <circle cx="80" cy="80" r="1.5" fill="rgba(85, 185, 255, 0.25)" />
+    </pattern>
+    <linearGradient id="laserBeam" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#55b9ff" stop-opacity="0" />
+      <stop offset="50%" stop-color="#55b9ff" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#55b9ff" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background Technical Grid Matrix -->
+  <rect width="1000" height="1000" fill="url(#gridSquares)" />
+  <rect width="1000" height="1000" fill="url(#scanlines)" />
+
+  <!-- Radial Reticle Rings -->
+  <g stroke="rgba(85, 185, 255, 0.2)" stroke-width="1" fill="none">
+    <circle cx="500" cy="500" r="420" stroke-dasharray="6 8" />
+    <circle cx="500" cy="500" r="300" stroke-dasharray="14 10" />
+    <circle cx="500" cy="500" r="120" stroke-width="1.5" stroke="rgba(85, 185, 255, 0.4)" />
+    <!-- Crosshairs -->
+    <line x1="80" y1="500" x2="920" y2="500" stroke-dasharray="4 6" opacity="0.3" />
+    <line x1="500" y1="80" x2="500" y2="920" stroke-dasharray="4 6" opacity="0.3" />
+  </g>
+
+  <!-- Corner Calibration Target Brackets -->
+  <g stroke="#55b9ff" stroke-width="2" opacity="0.6">
+    <path d="M 60 120 L 60 60 L 120 60" />
+    <path d="M 940 120 L 940 60 L 880 60" />
+    <path d="M 60 880 L 60 940 L 120 940" />
+    <path d="M 940 880 L 940 940 L 880 940" />
+  </g>
+
+  <!-- Telemetry Header Text -->
+  <g fill="#8793a6" font-family="'DM Mono', monospace" font-size="11" letter-spacing="2">
+    <text x="70" y="90">ATHEIA_NEURAL_MONITOR // V3.8</text>
+    <text x="70" y="110" fill="#55b9ff">SYS_FPS: 60.0 // LATENCY: 1.2ms</text>
+    <text x="750" y="90" text-anchor="end">OPTICAL_REGISTRATION: LOCKED</text>
+    <text x="750" y="110" text-anchor="end" fill="#67f5b0">CHROMA_CHANNEL: PASS</text>
+  </g>
+</svg>

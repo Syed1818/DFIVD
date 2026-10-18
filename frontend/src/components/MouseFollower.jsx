@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, useMotionValue } from 'motion/react';
 
 export default function MouseFollower() {

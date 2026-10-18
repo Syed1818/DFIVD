@@ -1,9 +1,9 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
 import BrainBackground from '../components/backgrounds/BrainBackground';
 import { ArrowRight, Shield, Zap, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import NeuronButton from '../components/NeuronButton';
+import GlitchRevealHero from '../components/GlitchRevealHero';
 
 export default function LandingPage() {
   const textRevealVariants = {
@@ -90,6 +90,14 @@ export default function LandingPage() {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Interactive Neural Forensics Glitch Reveal Hero */}
+        <div className="w-screen -mx-4 md:-mx-6 lg:-mx-12 mb-20 md:mb-40">
+          <GlitchRevealHero />
+        </div>
+
+        {/* Skip Navigation Anchor for Keyboard Accessibility */}
+        <div id="skip-forensics-hero" tabIndex={-1} className="outline-none" />
 
         {/* Bento Features Section */}
         <motion.div 

@@ -1,10 +1,10 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 
 function GridNodes() {
   const grid = useRef();
 
-  useFrame((state, delta) => {
+  useFrame((state) => {
     if (grid.current) {
       grid.current.position.z = (state.clock.elapsedTime * 2) % 2;
     }

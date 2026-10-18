@@ -1,9 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const DetectionContext = createContext();
 
 const API_BASE = "http://localhost:8000/api";
-const WS_BASE = "ws://localhost:8000/ws";
 
 export function DetectionProvider({ children }) {
   const [videoState, setVideoState] = useState({
@@ -116,7 +115,7 @@ export function DetectionProvider({ children }) {
               logs: [...prev.logs, `[ERROR] ${msgData.error || "Unknown error occurred"}`]
             }));
           }
-        } catch (err) {
+        } catch {
           setVideoState(prev => ({
             ...prev,
             loading: false,
@@ -231,4 +230,5 @@ export function DetectionProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useDetection = () => useContext(DetectionContext);
