@@ -19,6 +19,9 @@ export default defineConfig(({ mode }) => {
       include: ["motion/react"],
     },
     server: {
+      allowedHosts: [
+        'unpersonalised-clay-traditive.ngrok-free.dev'
+      ],
       port: 5173,
       proxy: {
         "/api": {
